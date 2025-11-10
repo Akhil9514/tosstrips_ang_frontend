@@ -1,0 +1,10 @@
+/* Social Icons: Navy by default, Red on hover */
+.social-links .icon-link i {
+    color: var(--navy);
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.social-links .icon-link:hover i {
+    color: var(--red);
+}

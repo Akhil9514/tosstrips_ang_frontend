@@ -1,0 +1,371 @@
+<nav class="navbar fixed-top">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center" (click)="goToHome()">
+      <div class="logo"></div>
+      <span class="edc-text"><!-- logo text --></span>
+    </a>
+    <span class="example-spacer"></span>
+    <!-- ==== DESKTOP MENU ==== -->
+    <ul class="navbar-links d-none d-lg-flex">
+      <!-- Destinations (desktop) -->
+      <li ngbDropdown #destinationsDropdown="ngbDropdown"
+          class="nav-item dropdown"
+          (mouseenter)="onMenuEnter('destinations')"
+          (mouseleave)="onMenuLeave('destinations')">
+
+        <a class="nav-link dropdown-toggle" ngbDropdownToggle>Destinations</a>
+
+        <div #destinationsMenu
+             class="dropdown-menu-wrapper"
+             ngbDropdownMenu
+             (mouseenter)="onMenuEnter('destinations')"
+             (mouseleave)="onMenuLeave('destinations')"
+             (click)="$event.stopPropagation()">
+
+          <ul class="destinations-grid mega-menu">
+            <!-- ==== ASIA ==== -->
+            <li class="continent-col">
+              <h6 class="continent-title">Asia</h6>
+              <ul class="country-list">
+
+                <li *ngFor="let country of asiaCountries">
+                  <a class="dropdown-item"
+                    (click)="selectCountry(country)"
+                    href="javascript:void(0)">
+                    {{ country.name }}
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+            <!-- ==== AFRICA ==== -->
+            <li class="continent-col">
+              <h6 class="continent-title">Africa</h6>
+              <ul class="country-list">
+                <li *ngFor="let country of africaCountries">
+                  <a class="dropdown-item"
+                    (click)="selectCountry(country)"
+                    href="javascript:void(0)">
+                    {{ country.name }}
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- ==== AUSTRALIA / OCEANIA ==== -->
+            <li class="continent-col">
+              <h6 class="continent-title">Australia/Oceania</h6>
+              <ul class="country-list">
+
+                <li *ngFor="let country of australiaCountries">
+                  <a class="dropdown-item"
+                    (click)="selectCountry(country)"
+                    href="javascript:void(0)">
+                    {{ country.name }}
+                  </a>
+                </li>
+
+              </ul>
+            </li>
+
+
+            <!-- ==== EUROPE ==== -->
+            <li class="continent-col">
+              <h6 class="continent-title">Europe</h6>
+              <ul class="country-list">
+
+                <li *ngFor="let country of europeCountries">
+                  <a class="dropdown-item"
+                    (click)="selectCountry(country)"
+                    href="javascript:void(0)">
+                    {{ country.name }}
+                  </a>
+                </li>
+                
+              </ul>
+            </li>
+            <!-- ==== LATIN AMERICA ==== -->
+            <li class="continent-col">
+              <h6 class="continent-title">Latin America</h6>
+              <ul class="country-list">
+
+                <li *ngFor="let country of latinAmericaCountries">
+                  <a class="dropdown-item"
+                    (click)="selectCountry(country)"
+                    href="javascript:void(0)">
+                    {{ country.name }}
+                  </a>
+                </li>
+              </ul>
+              </li>
+
+            <!-- ==== MIDDLE EAST ==== -->
+            <li class="continent-col">
+              <h6 class="continent-title">Middle East</h6>
+              <ul class="country-list">
+
+                <li *ngFor="let country of middleEastCountries">
+                  <a class="dropdown-item"
+                    (click)="selectCountry(country)"
+                    href="javascript:void(0)">
+                    {{ country.name }}
+                  </a>
+                </li>
+                
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Ways to Explore (desktop) -->
+      <li ngbDropdown #waysDropdown="ngbDropdown"
+          class="nav-item dropdown"
+          (mouseenter)="onMenuEnter('ways')"
+          (mouseleave)="onMenuLeave('ways')">
+
+        <a class="nav-link dropdown-toggle" ngbDropdownToggle>Ways to Explore</a>
+
+        <div #waysMenu
+             class="dropdown-menu-wrapper"
+             ngbDropdownMenu
+             (mouseenter)="onMenuEnter('ways')"
+             (mouseleave)="onMenuLeave('ways')"
+             (click)="$event.stopPropagation()">
+          
+             <ul class="mega-menu ways-to-explore-grid">
+            <li><a class="dropdown-item" [routerLink]="['/explore/get-moving']">Get Moving</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/cycling-adventures']">Cycling Adventures</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/explorer-trips']">Explorer Trips</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/celebrate-moments']">Celebrate Moments</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/taste-the-world']">Taste the World</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/wellness-retreats']">Wellness Retreats</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/walk-the-trails']">Walk the Trails</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/feel-the-culture']">Feel the Culture</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/overland-journeys']">Overland Journeys</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/river-cruises']">River Cruises</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/wildlife-safaris']">Wildlife Safaris</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/explore/sailing-tours']">Sailing Tours</a></li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Static links -->
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/about-us']"><span>About Us</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [routerLink]="['/contact-us']"><span>Contact Us</span></a>
+      </li>
+    </ul>
+
+    <!-- Currency selector (desktop) -->
+    <div class="country-select-parent">
+      <mat-form-field class="custom-currency-select">
+        <mat-select matNativeControl [(ngModel)]="requestingLocationCountry" (ngModelChange)="onCountryChange($event)" required>
+          <mat-option value="USA">USA</mat-option>
+          <mat-option value="INR">INR</mat-option>
+          <mat-option value="EURO">EURO</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Hamburger (mobile) -->
+    <button #toggler class="navbar-toggler custom-toggler d-lg-none" type="button" (click)="toggleSidebar()" aria-label="Toggle navigation">
+      <div class="hamburger"><span></span><span></span><span></span></div>
+    </button>
+  </div>
+</nav>
+
+<!-- ==================== MOBILE SIDEBAR ==================== -->
+<div class="sidebar-backdrop" [class.active]="isSidebarOpen" (click)="closeSidebar()"></div>
+<div class="sidebar d-lg-none" [class.active]="isSidebarOpen">
+  <div class="sidebar-header">
+    <h5>Menu</h5>
+  </div>
+  <ul class="sidebar-links">
+    <!-- DESTINATIONS (Mobile) -->
+    <li class="sidebar-item w-100">
+      <a class="nav-link d-flex justify-content-between align-items-center py-2" (click)="openDestinationsPanel()">
+        <i class="bi bi-globe2 me-2"></i>
+        <span>Destinations</span>
+        <i class="bi bi-chevron-right ms-auto"></i>
+      </a>
+    </li>
+
+    <!-- WAYS TO EXPLORE -->
+    <li class="sidebar-item w-100">
+      <a class="nav-link d-flex justify-content-between align-items-center py-2" (click)="openWaysPanel()">
+        <i class="bi bi-compass me-2"></i>
+        <span>Ways to Explore</span>
+        <i class="bi bi-chevron-right ms-auto"></i>
+      </a>
+    </li>
+
+    <li>
+      <a [routerLink]="['/epr-certification']" (click)="closeSidebar()">
+        <i class="bi bi-file-earmark-text"></i> <span>EPR Certification</span>
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="['/contact-us']" (click)="closeSidebar()">
+        <i class="bi bi-envelope"></i> <span>Contact Us</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<!-- ==================== OVERLAY PANELS ==================== -->
+<div class="sidebar-panel-backdrop" [class.active]="activePanel !== null" (click)="closePanel()"></div>
+
+<!-- DESTINATIONS PANEL -->
+<div class="sidebar-panel destinations-panel" [class.active]="activePanel === 'destinations'">
+  <div class="panel-header">
+    <button class="back-btn" (click)="closePanel()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <h5 class="panel-title">Destinations</h5>
+  </div>
+  <div class="panel-content mobile-scroll">
+    <ul class="destinations-grid mega-menu m-0">
+      <!-- ==== ASIA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Asia</h6>
+        <ul class="country-list">
+
+          <li *ngFor="let country of asiaCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+
+        </ul>
+      </li>
+      <!-- ==== AFRICA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Africa</h6>
+        <ul class="country-list">
+
+                    <li *ngFor="let country of africaCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+          
+        </ul>
+      </li>
+
+      <!-- ==== AFRICA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Australia/Oceania</h6>
+        <ul class="country-list">
+
+                    <li *ngFor="let country of australiaCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+          
+        </ul>
+      </li>
+
+
+      <!-- ==== AFRICA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Africa</h6>
+        <ul class="country-list">
+
+                    <li *ngFor="let country of africaCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+          
+        </ul>
+      </li>
+
+      <!-- ==== AFRICA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Europe</h6>
+        <ul class="country-list">
+
+                    <li *ngFor="let country of europeCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+          
+        </ul>
+      </li>
+
+
+      <!-- ==== AFRICA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Latin America</h6>
+        <ul class="country-list">
+
+                    <li *ngFor="let country of latinAmericaCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+          
+        </ul>
+      </li>
+
+
+      <!-- ==== AFRICA ==== -->
+      <li class="continent-col">
+        <h6 class="continent-title">Middle East</h6>
+        <ul class="country-list">
+
+                    <li *ngFor="let country of middleEastCountries">
+            <a class="dropdown-item"
+              (click)="selectCountry(country)"
+              (click)="closePanel()"
+              href="javascript:void(0)">
+              {{ country.name }}
+            </a>
+          </li>
+          
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- WAYS TO EXPLORE PANEL -->
+<div class="sidebar-panel ways-panel" [class.active]="activePanel === 'ways'">
+  <div class="panel-header">
+    <button class="back-btn" (click)="closePanel()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <h5 class="panel-title">Ways to Explore</h5>
+  </div>
+  <div class="panel-content mobile-scroll">
+    <ul class="mega-menu ways-to-explore-grid m-0">
+
+      
+      
+    
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,386 @@
+.bring{
+    float: left;
+    width: 100%;
+    margin-top: 45px;
+}
+
+.banner {
+    background: url('/assets/images/banner.png') no-repeat;
+    height: 480px;
+    background-size: cover;
+    border-radius: 23px;
+    position: relative;
+}
+
+.explore-the-best{
+  width:100%;
+  float:left;
+  margin-top:60px;
+  margin-bottom: 25px;
+}
+.explore-the-best h2{
+    font-size: 15px;
+    font-weight: 500;
+    color: #172a57;
+    position: relative;
+}
+.explore-the-best h2::after{
+    content: "";
+    position: absolute;
+    top: 9px;
+    margin-left: 13px;
+    border-bottom: 2px solid #fd1000;
+    width: 50px;
+
+}
+.explore-the-best h2::before{
+    content: "";
+    position: absolute;
+    top: 9px;
+    border-bottom: 2px solid #fd1000;
+    width: 50px;
+    margin-left: -60px;
+}
+
+.explore-the-best h3{
+    font-size: 32px;
+    font-weight: 500;
+    color: #172a57;
+}
+
+
+  .adventures{
+    width: 100%;
+    float: left;
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  .adventures ul{
+    margin:0; 
+    padding:0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .adventures ul li{
+    list-style-type:none;
+    text-align: center;
+  }
+   .adventures ul li p{
+    font-size: 14px;
+    font-weight: 600;
+    color: #172a57;
+    margin: 15px 0 0;
+   }
+
+
+
+    .why-travel{width:100%; float:left; margin: 37px 0 25px;}
+   .why-travel h2{
+    font-size: 32px;
+    font-weight: 500;
+    color: #172a57;
+    margin: 0 0 19px;
+   }
+   .why-travel p{
+    font-size: 17px;
+    font-weight: 500;
+    color: #172a57;
+   }
+
+
+
+   .small-group{
+    width: 100%;
+    float: left;
+    background: #f6f6fa;
+    padding: 30px 0 0;
+   }
+
+   .small-group ul{
+    margin:0;
+    padding:0;
+   }
+  .small-group ul li{
+    list-style-type: none;
+    float: left;
+    width: 31.33%;
+    margin-right: 3%;
+    margin-bottom: 3%;
+  }
+  .small-group ul li:nth-child(3){
+    margin-right:0;
+  }
+   .small-group ul li:nth-child(6){
+    margin-right:0;
+  }
+  .small-group ul li .join-like{
+    float: left;
+    width: 100%;
+    background: #fff;
+    padding: 21px;
+    border-radius: 10px;
+  }
+  .small-group ul li .join-like h3{
+    color: #14142f;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+  .small-group ul li .join-like h3 img{
+     float: left;
+     margin-right: 14px;
+  }
+  .small-group ul li .join-like p{
+    color: #14142f;
+    font-size: 15px;
+    font-weight: 500;
+    display: inline-block;
+    text-align: justify;
+    margin: 12px 0 0;
+  }
+
+    .new-trips{
+    width: 100%;
+    float: left;
+    margin: 10px 0 25px;
+  }
+  .new-trips .nav-link {
+    display: block;
+    padding: 1.3rem 1rem;
+  }
+  .new-trips .nav {
+    justify-content: center;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .new-trips .nav-pills .nav-link.active, .new-trips .nav-pills .show>.nav-link {
+    color: #000922;
+    font-size: 20px;
+    font-weight: 600;
+    background-color:transparent;
+    border-bottom:5px solid #ff2626;
+    border-radius:0;
+}
+.new-trips .nav-pills .nav-link {
+    border-radius: 0;
+    color: #000922;
+    font-size: 20px;
+    font-weight:400;
+}
+
+
+
+
+.spotlight{
+    width: 100%;
+    float: left;
+    margin: 37px 0 25px;
+}
+.spotlight h2{
+    font-size: 22px;
+    font-weight: 500;
+    color: #172a57;
+    text-align: center;
+}
+.spotlight p{
+    color: #000922;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 40px;
+}
+.spotlight ul{
+    margin:0;
+    padding:0;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+
+.adventures-selected{
+   width: 100%;
+   float: left;
+   margin: 55px 0 25px;
+}
+.adventures-selected h2{
+    font-size: 23px;
+    font-weight: 600;
+    color: #172a57;
+    margin-bottom: 7px;
+}
+.adventures-selected h3{
+    font-size: 13px;
+    font-weight: 700;
+    color: #172a57;
+    margin-bottom: 0;
+}
+.adventures-selected ul{
+    margin: 20px 0 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+}
+.adventures-selected ul li{
+    list-style-type: none;
+    box-shadow: 0 2px 3px 0 rgb(12 6 14 / 14%);
+    -webkit-box-shadow: 0 2px 3px 0 rgb(12 6 14 / 14%);
+    border: 1px solid #e7e7e7;
+    width: 24%;
+    padding: 10px 15px;
+    border-radius: 12px;
+}
+.adventures-selected ul li p{
+    font-size: 13px;
+    font-weight: 500;
+    color: #172a57;
+    margin: 5px 0 0;
+    text-align: left; 
+}
+.adventures-selected ul li p span{
+  text-decoration: line-through;
+}
+
+
+@media (min-width: 992px) {
+    .col-lg-12 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+
+@media (max-width:767px) {
+
+.banner h1 {
+    position: absolute;
+    right: 23%;
+    top: 4%;
+    font-size: 19px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 24px;
+}
+
+.explore-the-best {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.explore-the-best h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #172a57;
+}
+
+
+.adventures ul {
+    margin: 0;
+    padding: 0;
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+}
+.adventures ul li {
+    list-style-type: none;
+    text-align: center;
+    width: 33%;
+    margin-bottom: 26px;
+    float: left;
+}
+
+.why-travel {
+    width: 100%;
+    float: left;
+    margin: 0 0 0;
+}
+
+.why-travel h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #172a57;
+    margin: 0 0 19px;
+}
+.why-travel p {
+    font-size: 14px;
+    font-weight: 500;
+    color: #172a57;
+}
+
+
+.small-group ul li {
+    list-style-type: none;
+    float: left;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 3%;
+}
+.small-group ul li .join-like h3 {
+    color: #14142f;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+.small-group ul li .join-like p{font-size:14px;}
+
+.new-trips .nav{
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap:inherit;
+}
+.new-trips .nav-pills .nav-link.active, .new-trips .nav-pills .show>.nav-link {
+    font-size: 15px;
+}
+.new-trips .nav-pills .nav-link {
+    font-size: 16px;
+}
+
+.spotlight ul {
+    margin: 0;
+    padding: 0;
+    display: block;
+    justify-content: space-between;
+}
+.spotlight ul li {
+    list-style-type: none;
+    width: 100%;
+    padding: 22px;
+    margin-bottom: 23px;
+}
+
+.adventures-selected ul {
+    margin: 0 0 0;
+    padding: 0;
+    display: block;
+}
+.adventures-selected ul li{
+    width: 100%;
+    margin-bottom: 19px;
+}
+.adventures-selected h2 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #172a57;
+    margin-bottom: 16px;
+}
+}
+
+
+
+.mat-tab-group {
+  margin-bottom: 48px;
+}
+
+
+
+swiper-slide{
+    cursor:grab
+}
+
+

@@ -1,0 +1,505 @@
+/* ================================================
+   NAVBAR & CORE LAYOUT
+   ================================================ */
+.navbar {
+  margin-top: 0;
+  border-radius: 0;
+  background-color: #fff;
+  height: 130px;
+  padding: 1px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Logo */
+.logo {
+  height: 140px;
+  width: 140px;
+  margin-right: 10px;
+  background: url("/assets/images/logo/logo-new.png") center/contain no-repeat;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(1px 1px 3px rgba(0,0,0,.15));
+}
+.logo:hover { transform: scale(1.1); }
+
+/* Company Text */
+.edc-text span {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--navy);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.edc-text span:hover {
+  transform: scale(1.2);
+  color: var(--teal);
+}
+
+/* Navbar Links (Desktop) */
+.navbar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-links li { margin-left: 20px; }
+.navbar-links a {
+  font-weight: 500;
+  font-size: 1.15rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.navbar-links a:hover {
+  background-color: var(--hover-bg);
+  color: var(--teal);
+}
+.navbar-links a i {
+  margin-right: 8px;
+  font-size: 1.1rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.navbar-links a:hover i {
+  transform: scale(1.2);
+  color: var(--teal);
+}
+
+/* Hamburger */
+.custom-toggler {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  outline: none;
+}
+.hamburger {
+  width: 30px;
+  height: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--navy);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.2));
+}
+.custom-toggler.active .hamburger span:nth-child(1) { transform: translateY(10px) rotate(45deg); }
+.custom-toggler.active .hamburger span:nth-child(2) { opacity: 0; }
+.custom-toggler.active .hamburger span:nth-child(3) { transform: translateY(-10px) rotate(-45deg); }
+
+/* Spacer */
+.example-spacer { flex: 1 1 auto; }
+
+/* ================================================
+   SIDEBAR (Mobile Menu)
+   ================================================ */
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: -300px;
+  width: 280px;
+  height: 100%;
+  background-color: var(--light-bg);
+  padding: 1rem;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+  transition: left 0.3s ease-in-out;
+  z-index: 1050;
+}
+.sidebar.active { left: 0; }
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-links a,
+.sidebar-links .login-logout a,
+.sidebar-footer a {
+  color: var(--navy);
+  text-decoration: none;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.sidebar-links a:hover,
+.sidebar-links .login-logout a:hover,
+.sidebar-footer a:hover {
+  background-color: var(--hover-bg);
+  color: var(--teal);
+}
+.sidebar-links a i,
+.sidebar-links .login-logout a i,
+.sidebar-footer a i {
+  margin-right: 8px;
+  font-size: 1.1rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+.sidebar-links a:hover i,
+.sidebar-links .login-logout a:hover i,
+.sidebar-footer a:hover i {
+  transform: scale(1.2);
+  color: var(--teal);
+}
+
+/* Collapsible */
+.sidebar-links .collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+.sidebar-links .collapse.show { max-height: 200px; }
+.sidebar-links ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+.sidebar-links ul li a {
+  font-size: 0.95rem;
+  padding: 0.3rem 0.5rem;
+  display: block;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 51, 102, 0.25);
+  backdrop-filter: blur(4px);
+  z-index: 1049;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 10px;
+  width: calc(100% - 2rem);
+  font-size: 0.875rem;
+  text-align: start;
+}
+
+/* ================================================
+   MEGA MENU (Desktop)
+   ================================================ */
+.navbar .dropdown {
+  position: relative;
+}
+
+.navbar .dropdown-menu-wrapper {
+  display: flex !important;
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  z-index: 1000;
+  padding: 0;
+  margin: 0;
+  width: fit-content;
+  min-width: 600px;
+  max-width: 95vw;
+  background: #fff;
+  border-radius: .375rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+              visibility 0s linear 0.25s;
+}
+
+.navbar .dropdown-menu-wrapper.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+  transition-delay: 0s, 0s, 0s;
+}
+
+.navbar .mega-menu {
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  background: #fff;
+  border-radius: .375rem;
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15), 0 -.5rem 1rem rgba(0,0,0,.05);
+  list-style: none;
+}
+
+/* Destinations Grid */
+.navbar .mega-menu.destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 2rem 1.5rem;
+  font-size: 1.2rem;
+}
+.navbar .continent-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+.navbar .continent-title,
+.sidebar-panel .continent-title {
+  text-align: left !important;
+  margin: 0 0 .75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--red);
+  width: 100%;
+}
+
+.navbar .country-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  width: 100%;
+}
+
+/* Ways to Explore Grid */
+.navbar .mega-menu.ways-to-explore-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem 2rem;
+  max-width: 900px;
+  padding: 1.5rem 2rem;
+}
+
+/* Dropdown Items (Shared) */
+.navbar .dropdown-item,
+.sidebar-panel .dropdown-item,
+.country-list .dropdown-item {
+  color: var(--navy);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: .25rem;
+  transition: background 0.2s ease;
+  display: block;
+  text-align: left !important;
+  width: 100%;
+  margin: 0 !important;           /* NEW: Remove any inherited margin */
+  padding-left: 0 !important;     /* NEW: Remove left padding */
+  text-indent: 0 !important;      /* NEW: Prevent indent */
+}
+
+/* Hover */
+.navbar .dropdown-item:hover,
+.sidebar-panel .dropdown-item:hover,
+.country-list .dropdown-item:hover {
+  background: var(--hover-bg);
+  color: var(--teal);
+}
+
+/* LEFT ALIGN: Continent & Country Names (ALL) */
+.navbar .continent-title,
+.sidebar-panel .continent-title,
+.navbar .country-list .dropdown-item,
+.sidebar-panel .country-list .dropdown-item {
+  text-align: left !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Mobile Mega Menu Fallback */
+@media (max-width: 991px) {
+  .navbar .mega-menu,
+  .navbar .ways-to-explore-grid {
+    grid-template-columns: 1fr !important;
+    padding: 1rem;
+    max-width: 100%;
+  }
+}
+
+/* ================================================
+   MOBILE PANELS (Destinations / Ways)
+   ================================================ */
+.sidebar-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 51, 102, 0.4);
+  backdrop-filter: blur(6px);
+  z-index: 1048;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.sidebar-panel-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-panel {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 280px;
+  height: 100vh;
+  background: var(--light-bg);
+  display: flex;
+  flex-direction: column;
+  transition: left 0.35s ease;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+  z-index: 1055;
+}
+.sidebar-panel.active { left: 0; }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-bottom: 2px solid var(--navy);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--navy);
+  cursor: pointer;
+  padding: 0.25rem;
+  margin-right: 0.75rem;
+}
+.panel-title {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin-right: 2rem;
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background: white;
+}
+.sidebar-panel .mega-menu {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ================================================
+   THEMED SCROLLBAR (All scrollable areas)
+   ================================================ */
+.panel-content::-webkit-scrollbar,
+.mobile-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.panel-content::-webkit-scrollbar-track,
+.mobile-scroll::-webkit-scrollbar-track {
+  background: var(--light-bg);
+  border-radius: 4px;
+}
+.panel-content::-webkit-scrollbar-thumb,
+.mobile-scroll::-webkit-scrollbar-thumb {
+  background: var(--navy);
+  border: 2px solid var(--light-bg);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+.panel-content::-webkit-scrollbar-thumb:hover,
+.mobile-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--teal);
+}
+
+/* Firefox */
+.panel-content,
+.mobile-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--navy) var(--light-bg);
+  scroll-behavior: smooth;
+}
+
+/* ================================================
+   CURRENCY SELECT (Angular Material)
+   ================================================ */
+.custom-currency-select .mat-mdc-select-value { color: var(--teal) !important; font-weight: 600 !important; font-size: 0.95rem; padding-left: 4px; }
+.custom-currency-select .mat-mdc-select-arrow { color: var(--teal); }
+.custom-currency-select .mat-mdc-form-field-outline-thick { color: var(--teal) !important; }
+.custom-currency-select .mat-mdc-text-field-wrapper { border-radius: 8px; }
+.custom-currency-select .mat-mdc-floating-label { color: #6b7280; font-size: 0.9rem; }
+
+::ng-deep .custom-currency-select .mat-mdc-select-panel {
+  margin-top: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 140px !important;
+  max-height: 240px;
+  font-size: 0.95rem;
+}
+::ng-deep .custom-currency-select .mat-mdc-option {
+  padding: 0 12px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  color: #1f2937;
+  font-weight: 500;
+}
+::ng-deep .custom-currency-select .mat-mdc-option:hover { background: var(--hover-bg) !important; }
+::ng-deep .custom-currency-select .mat-mdc-option.mat-mdc-option-active {
+  background: rgba(0,168,168,.12) !important;
+  color: var(--teal);
+}
+
+.custom-currency-select { width: 100px; height: 70px; padding: 2px; }
+.country-select-parent { margin-left: 8vw; }
+
+@media (max-width: 921px) {
+  .custom-currency-select { width: 100px; height: 70px; padding: 2px; }
+  .country-select-parent { margin-top: 10px; }
+}
+
+/* ================================================
+   RESPONSIVE ADJUSTMENTS
+   ================================================ */
+@media (max-width: 576px) {
+  .edc-text span { font-size: 1rem; }
+  .sidebar { width: 200px; left: -210px; }
+  .sidebar-links a,
+  .sidebar-links .login-logout a,
+  .sidebar-footer a { font-size: 0.9rem; }
+  .sidebar-links a i,
+  .sidebar-links .login-logout a i,
+  .sidebar-footer a i { font-size: 1rem; }
+}
