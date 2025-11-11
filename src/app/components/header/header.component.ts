@@ -333,17 +333,22 @@ getCountries(id: number): Observable<any> {
 
 
 selectCountry(country: Country): void {
-    // Save to localStorage
-    this.tourntripsCountryService.setCountry(country);
+  // Save to localStorage
+  this.tourntripsCountryService.setCountry(country);
 
-    // Generate URL: "Cambodia" → "/cambodia", "South Korea" → "/south-korea"
-    const urlName = country.name
-      .toLowerCase()
-      .replace(/\s+/g, '-');
+  // Generate URL: "Cambodia" → "/cambodia", "South Korea" → "/south-korea"
+  const urlName = country.name
+    .toLowerCase()
+    .replace(/\s+/g, '-');
 
-    this.router.navigate([`/${urlName}`]);
-  }
-
+  // Navigate and subscribe to events for post-navigation refresh
+  this.router.navigate([`/${urlName}`]).then((success: boolean) => {
+    if (success) {
+      // Refresh the page after successful navigation
+      window.location.reload();
+    }
+  });
+}
 
 
 

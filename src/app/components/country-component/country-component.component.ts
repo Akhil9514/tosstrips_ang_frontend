@@ -18,6 +18,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -30,12 +32,6 @@ import { RequestingLocationService } from '../../services/requesting-location.se
 import { Country } from '../../models/country.model';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { signal, WritableSignal } from '@angular/core';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatButtonModule } from '@angular/material/button';
-
-/* ==============================================================
-   INTERFACES
-   ============================================================== */
 
 export interface User {
   name: string;
@@ -69,6 +65,7 @@ interface Tour {
   rating: number;
   no_of_reviews: number;
   destinations: string[];
+  image: string;
   shadow_price: string;
   discount_percentage: string;
   departure_date_us: string;
@@ -92,7 +89,7 @@ interface Filters {
   start_city?: number;
   end_city?: number;
   departure_date?: Date;
-  search_city?: number
+  search_city?: number;
 }
 
 interface Month {
@@ -101,14 +98,10 @@ interface Month {
   year: number;
 }
 
-
 interface FilterChip {
-  key: string;        // e.g., 'departure_date', 'month=7', 'start_city=3'
-  label: string;      // e.g., 'Departure: 2025-07-15'
+  key: string;
+  label: string;
 }
-/* ==============================================================
-   COMPONENT DEFINITION
-   ============================================================== */
 
 @Component({
   selector: 'app-country-component',
@@ -137,76 +130,54 @@ interface FilterChip {
   encapsulation: ViewEncapsulation.None
 })
 export class CountryComponentComponent implements OnInit, OnDestroy {
-
-  /* ==============================================================
-     PRICE SLIDER CONFIGURATION
-     ============================================================== */
+  /* PRICE SLIDER */
   minPrice = 100;
   maxPrice = 10000;
   minValue = 100;
   maxValue = 5000;
 
-  /* ==============================================================
-     CURRENCY CONFIGURATION
-     ============================================================== */
+  /* CURRENCY */
   private currencies: Currency[] = [
     { code: 'USD', symbol: '$', name: 'US Dollar' },
     { code: 'EUR', symbol: 'EUR', name: 'Euro' },
     { code: 'INR', symbol: '₹', name: 'Indian Rupee' }
   ];
-
   selectedCurrency: Currency = this.currencies[0];
 
-  /* ==============================================================
-     COUNTRY & LOCATION STATE
-     ============================================================== */
+  /* COUNTRY & LOCATION */
   selectedCountry: string | null = null;
   requestingLocationCountry: string = '';
   pageCountry: Country | null = null;
-
-  // City with ID
   destinationCities: { id: number; name: string }[] = [];
 
-  // Start City
-  selectedStartCity: { id: number; name: string } | null = null;
-  startCityControl = new FormControl<{ id: number; name: string } | string>('');
-  filteredStartCities$!: Observable<{ id: number; name: string }[]>;
-
-  // End City
-  selectedEndCity: { id: number; name: string } | null = null;
-  endCityControl = new FormControl<{ id: number; name: string } | string>('');
-  filteredEndCities$!: Observable<{ id: number; name: string }[]>;
-
-  // Top Search City (for "Search city" in header)
+  // City Controls
   myControl = new FormControl<{ id: number; name: string } | string>('');
   filteredOptions$!: Observable<{ id: number; name: string }[]>;
+  selectedSearchCity: { id: number; name: string } | null = null;
 
-  /* ==============================================================
-     ADVENTURE STYLES
-     ============================================================== */
+  startCityControl = new FormControl<{ id: number; name: string } | string>('');
+  filteredStartCities$!: Observable<{ id: number; name: string }[]>;
+  selectedStartCity: { id: number; name: string } | null = null;
+
+  endCityControl = new FormControl<{ id: number; name: string } | string>('');
+  filteredEndCities$!: Observable<{ id: number; name: string }[]>;
+  selectedEndCity: { id: number; name: string } | null = null;
+
+  /* ADVENTURE STYLES */
   adventureStyles: AdventureStyle[] = [];
   adventureStylesForm = new FormArray<FormControl<boolean>>([]);
   loadingAdventureStyles = false;
 
-
-  // Search City (for "Search city" in filter bar)
-selectedSearchCity: { id: number; name: string } | null = null;
-
-  /* ==============================================================
-     TOURS & PAGINATION
-     ============================================================== */
+  /* TOURS & PAGINATION */
   tours: Tour[] = [];
   totalTours = 0;
   currentPage = 1;
   pageSize = 10;
   totalPages = 0;
   loadingTours = false;
-
   selectedDepartureDate = new FormControl<Date | null>(null);
 
-  /* ==============================================================
-     SORTING OPTIONS
-     ============================================================== */
+  /* SORTING */
   sortingOptions: SortOption[] = [
     { label: 'Total Price: Lowest Price', value: 'price=low' },
     { label: 'Total Price: Highest Price', value: 'price=high' },
@@ -216,28 +187,22 @@ selectedSearchCity: { id: number; name: string } | null = null;
     { label: 'Biggest Deals: Highest Savings', value: 'discount=high' },
     { label: 'Popularity: Most Popular First', value: 'popularity=high' }
   ];
-
   selectedSort: string = '';
 
-  /* ==============================================================
-     MONTH FILTERS
-     ============================================================== */
+  /* MONTH FILTERS */
   months: Month[] = [
-    { label: 'July 2025',     value: 7,  year: 2025 },
-    { label: 'August 2025',   value: 8,  year: 2025 },
-    { label: 'September 2025',value: 9,  year: 2025 },
-    { label: 'October 2025',  value: 10, year: 2025 },
+    { label: 'July 2025', value: 7, year: 2025 },
+    { label: 'August 2025', value: 8, year: 2025 },
+    { label: 'September 2025', value: 9, year: 2025 },
+    { label: 'October 2025', value: 10, year: 2025 },
     { label: 'November 2025', value: 11, year: 2025 },
     { label: 'December 2025', value: 12, year: 2025 },
-    { label: 'January 2026',  value: 1,  year: 2026 },
-    { label: 'February 2026', value: 2,  year: 2026 }
+    { label: 'January 2026', value: 1, year: 2026 },
+    { label: 'February 2026', value: 2, year: 2026 }
   ];
-
   selectedMonths = signal<number[]>([]);
 
-  /* ==============================================================
-     GLOBAL FILTERS & STATE
-     ============================================================== */
+  /* FILTERS STATE */
   globalFilters: Filters = {
     min_price: undefined,
     max_price: undefined,
@@ -245,26 +210,22 @@ selectedSearchCity: { id: number; name: string } | null = null;
     adventure_style: [],
     start_city: undefined,
     end_city: undefined,
-    departure_date: undefined
+    departure_date: undefined,
+    search_city: undefined
   };
 
   globalFilterArray = signal<string[]>([]);
-
   activeFilters = signal<FilterChip[]>([]);
+  activeFilterCount = signal(0);
 
-// Count for badge
-activeFilterCount = signal(0);
+  isDepartureOpen = true;
+  isAdventureStyles = true;
+  isStartandEndCityOpen = true;
 
-  /* ==============================================================
-     SUBSCRIPTIONS
-     ============================================================== */
   private countrySub?: Subscription;
   private citiesSub?: Subscription;
   private toursSub?: Subscription;
 
-  /* ==============================================================
-     CONSTRUCTOR
-     ============================================================== */
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private route: ActivatedRoute,
@@ -280,9 +241,6 @@ activeFilterCount = signal(0);
     });
   }
 
-  /* ==============================================================
-     LIFECYCLE: ngOnInit
-     ============================================================== */
   ngOnInit(): void {
     this.loadAdventureStyles();
     this.pageCountry = this.tourntripCountryService.getCountry();
@@ -293,23 +251,18 @@ activeFilterCount = signal(0);
     }
 
     this.handleCountryRouting();
+    this.selectedDepartureDate.valueChanges.subscribe((date: Date | null) => {
+      if (date) {
+        const formatted = this.formatDate(date);
+        this.onSpecificDateSelected(formatted);
+      } else {
+        this.onSpecificDateCleared();
+      }
+    });
 
-// Listen to specific departure date
-  this.selectedDepartureDate.valueChanges.subscribe((date: Date | null) => {
-    if (date) {
-      const formatted = this.formatDate(date);
-      this.onSpecificDateSelected(formatted);
-    } else {
-      this.onSpecificDateCleared();
-    }
-  });
+    this.updateActiveFilterChips();
+  }
 
-
-  this.updateActiveFilterChips();
-}
-  /* ==============================================================
-     COUNTRY ROUTING & PERSISTENCE
-     ============================================================== */
   private handleCountryRouting(): void {
     const countryFromUrl = this.route.snapshot.paramMap.get('country');
     this.selectedCountry = countryFromUrl || null;
@@ -317,7 +270,6 @@ activeFilterCount = signal(0);
     if (isPlatformBrowser(this.platformId)) {
       if (countryFromUrl) {
         localStorage.setItem('selectedCountry', countryFromUrl);
-        this.selectedCountry = countryFromUrl;
       } else {
         const savedCountry = localStorage.getItem('selectedCountry');
         const targetCountry = savedCountry || 'india';
@@ -329,13 +281,6 @@ activeFilterCount = signal(0);
         this.selectedCurrency = this.currencies.find(c => c.code === 'INR')!;
       }
     }
-  }
-
-  /* ==============================================================
-     CURRENCY HANDLING
-     ============================================================== */
-  onCurrencyChange(currency: Currency): void {
-    this.selectedCurrency = currency;
   }
 
   private updateCurrencyBasedOnCountry(country: string | null): void {
@@ -365,9 +310,6 @@ activeFilterCount = signal(0);
     this.selectedCurrency = this.currencies[0];
   }
 
-  /* ==============================================================
-     DESTINATION CITIES LOADING (WITH ID)
-     ============================================================== */
   private getCityForCountryDestinations(countryId: number): Observable<{ city: string }[]> {
     const url = `${this.backendUrlService.getTournTripUrl()}countries/${countryId}/cities/`;
     return this.http.get<{ city: string }[]>(url).pipe(
@@ -379,135 +321,89 @@ activeFilterCount = signal(0);
     );
   }
 
-private loadDestinationCities(countryId: number): void {
-  this.citiesSub = this.getCityForCountryDestinations(countryId).subscribe({
-    next: (data) => {
-      this.destinationCities = data
-        .map((item, index) => ({
-          id: index,
-          name: (item.city || '').trim()
-        }))
-        .filter(city => city.name.length > 0);
+  private loadDestinationCities(countryId: number): void {
+    this.citiesSub = this.getCityForCountryDestinations(countryId).subscribe({
+      next: (data) => {
+        this.destinationCities = data
+          .map((item, index) => ({
+            id: index,
+            name: (item.city || '').trim()
+          }))
+          .filter(city => city.name.length > 0);
 
-      console.log('Loaded cities:', this.destinationCities);
-      this.setupCityAutocompletes();
-    },
-    error: (err) => {
-      console.error('Failed to load cities:', err);
-      this.destinationCities = [];
-      this.setupCityAutocompletes();
-    }
-  });
-}
+        this.setupCityAutocompletes();
+      },
+      error: (err) => {
+        console.error('Failed to load cities:', err);
+        this.destinationCities = [];
+        this.setupCityAutocompletes();
+      }
+    });
+  }
 
-  /* ==============================================================
-     CITY AUTOCOMPLETE SETUP (ALL THREE)
-     ============================================================== */
   private setupCityAutocompletes(): void {
-    // Start City
     this.filteredStartCities$ = this.startCityControl.valueChanges.pipe(
       startWith(''),
-      map(value => {
-        const term = typeof value === 'string' ? value : value?.name ?? '';
-        return this.filterCities(term);
-      })
+      map(value => this.filterCities(typeof value === 'string' ? value : value?.name ?? ''))
     );
 
-    // End City
     this.filteredEndCities$ = this.endCityControl.valueChanges.pipe(
       startWith(''),
-      map(value => {
-        const term = typeof value === 'string' ? value : value?.name ?? '';
-        return this.filterCities(term);
-      })
+      map(value => this.filterCities(typeof value === 'string' ? value : value?.name ?? ''))
     );
 
-    // Top Search City (in header)
     this.filteredOptions$ = this.myControl.valueChanges.pipe(
       startWith(''),
-      map(value => {
-        const term = typeof value === 'string' ? value : value?.name ?? '';
-        return this.filterCities(term);
-      })
+      map(value => this.filterCities(typeof value === 'string' ? value : value?.name ?? ''))
     );
   }
 
-private filterCities(term: string): { id: number; name: string }[] {
-  if (!term) return this.destinationCities;
-  const filterValue = term.toLowerCase();
-  return this.destinationCities.filter(city =>
-    city.name.toLowerCase().includes(filterValue)
-  );
-}
+  private filterCities(term: string): { id: number; name: string }[] {
+    if (!term) return this.destinationCities;
+    const filterValue = term.toLowerCase();
+    return this.destinationCities.filter(city => city.name.toLowerCase().includes(filterValue));
+  }
 
-displayFn(city: { id: number; name: string } | string | null): string {
-  return city && typeof city === 'object' ? city.name : '';
-}
+  displayFn(city: { id: number; name: string } | string | null): string {
+    return city && typeof city === 'object' ? city.name : '';
+  }
 
-  /* ==============================================================
-     START CITY SELECTION
-     ============================================================== */
   onStartCitySelected(event: MatAutocompleteSelectedEvent): void {
     const city = event.option.value as { id: number; name: string };
-
     if (this.selectedStartCity) {
       this.removeFilter(`start_city=${this.selectedStartCity.id}`);
     }
-
     this.selectedStartCity = city;
     this.globalFilters.start_city = city.id;
     this.addFilter(`start_city=${city.id}`);
-
     this.reloadTours();
-    console.log('Start city selected:', city);
-
     this.updateActiveFilterChips();
   }
 
-  /* ==============================================================
-     END CITY SELECTION
-     ============================================================== */
   onEndCitySelected(event: MatAutocompleteSelectedEvent): void {
     const city = event.option.value as { id: number; name: string };
-
     if (this.selectedEndCity) {
       this.removeFilter(`end_city=${this.selectedEndCity.id}`);
     }
-
     this.selectedEndCity = city;
     this.globalFilters.end_city = city.id;
     this.addFilter(`end_city=${city.id}`);
-
     this.reloadTours();
-    console.log('End city selected:', city);
-
     this.updateActiveFilterChips();
   }
 
-  /* ==============================================================
-     TOP CITY SEARCH SELECTION (in header)
-     ============================================================== */
-onCitySelected(event: MatAutocompleteSelectedEvent): void {
-  const city = event.option.value as { id: number; name: string };
-
-  // Remove previous search_city filter
-  if (this.selectedSearchCity) {
-    this.removeFilter(`search_city=${this.selectedSearchCity.id}`);
+  onCitySelected(event: MatAutocompleteSelectedEvent): void {
+    const city = event.option.value as { id: number; name: string };
+    if (this.selectedSearchCity) {
+      this.removeFilter(`search_city=${this.selectedSearchCity.id}`);
+    }
+    this.selectedSearchCity = city;
+    this.globalFilters.search_city = city.id;
+    this.addFilter(`search_city=${city.id}`);
+    this.reloadTours();
+    this.updateActiveFilterChips();
   }
 
-  this.selectedSearchCity = city;
-  this.globalFilters.search_city = city.id;
-  this.addFilter(`search_city=${city.id}`);
-
-  this.reloadTours();
-  this.updateActiveFilterChips();
-
-  console.log('Search city selected:', city);
-}
-
-  /* ==============================================================
-     ADVENTURE STYLES
-     ============================================================== */
   private getAdventureStyles(): Observable<AdventureStyle[]> {
     const url = `${this.backendUrlService.getTournTripUrl()}adventure-styles/`;
     return this.http.get<AdventureStyle[]>(url).pipe(
@@ -521,7 +417,6 @@ onCitySelected(event: MatAutocompleteSelectedEvent): void {
 
   private loadAdventureStyles(): void {
     this.loadingAdventureStyles = true;
-
     this.getAdventureStyles().subscribe({
       next: (data) => {
         this.adventureStyles = data;
@@ -542,7 +437,6 @@ onCitySelected(event: MatAutocompleteSelectedEvent): void {
   onAdventureStyleChange(index: number, event: MatCheckboxChange): void {
     const checked = event.checked;
     const styleId = this.adventureStyles[index].id;
-
     this.adventureStylesForm.at(index).setValue(checked);
 
     if (checked) {
@@ -554,20 +448,10 @@ onCitySelected(event: MatAutocompleteSelectedEvent): void {
       this.globalFilters.adventure_style = this.globalFilters.adventure_style?.filter(id => id !== styleId) || [];
       this.removeFilter(`adventure_style=${styleId}`);
     }
-
     this.reloadTours();
     this.updateActiveFilterChips();
   }
 
-  getSelectedAdventureStyles(): number[] {
-    return this.adventureStylesForm.controls
-      .map((control, index) => control.value ? this.adventureStyles[index].id : null)
-      .filter((id): id is number => id !== null);
-  }
-
-  /* ==============================================================
-     TOURS LOADING & PAGINATION
-     ============================================================== */
   private grabToursnTrips(countryId: number, page: number = 1): Observable<ToursResponse> {
     const url = `${this.backendUrlService.getTournTripUrl()}countries/${countryId}/tours/?page=${page}&page_size=${this.pageSize}`;
     return this.http.get<ToursResponse>(url).pipe(
@@ -617,95 +501,46 @@ onCitySelected(event: MatAutocompleteSelectedEvent): void {
     return tour.id;
   }
 
-  /* ==============================================================
-     FILTERS: PRICE, MONTH, SORT
-     ============================================================== */
   onRangeChange(value: number, type: 'min' | 'max'): void {
     this.globalFilters.min_price = this.minValue;
     this.globalFilters.max_price = this.maxValue;
-    console.log('Price range:', this.globalFilters);
-
     this.updateActiveFilterChips();
   }
 
   onSortChange(): void {
-
-
-    console.log('Selected sort:', this.selectedSort);
-
     if (!this.selectedSort) {
       this.router.navigate([], { queryParams: {}, queryParamsHandling: 'merge' });
       return;
     }
-
-    console.log()
-
     const [key, value] = this.selectedSort.split('=');
     const queryParams: any = { [key]: value };
     this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
   }
 
-  // toggleMonth(month: Month, event: MatCheckboxChange): void {
-  //   const monthNum = month.value;
-
-  //   if (event.checked) {
-  //     this.selectedMonths.update(arr => [...arr, monthNum]);
-  //     this.globalFilters.departure_date = undefined;
-  //   } else {
-  //     this.selectedMonths.update(arr => arr.filter(m => m !== monthNum));
-  //   }
-
-  //   this.syncMonthFilters();
-  // }
-
-
-
-  // 1. toggleMonth
-toggleMonth(month: Month, event: MatCheckboxChange): void {
-  const monthNum = month.value;
-
-  if (event.checked) {
-    this.selectedDepartureDate.setValue(null);
-    this.globalFilters.departure_date = undefined;
-    this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
-
-    this.selectedMonths.update(arr => [...arr, monthNum]);
-  } else {
-    this.selectedMonths.update(arr => arr.filter(m => m !== monthNum));
+  toggleMonth(month: Month, event: MatCheckboxChange): void {
+    const monthNum = month.value;
+    if (event.checked) {
+      this.selectedDepartureDate.setValue(null);
+      this.globalFilters.departure_date = undefined;
+      this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
+      this.selectedMonths.update(arr => [...arr, monthNum]);
+    } else {
+      this.selectedMonths.update(arr => arr.filter(m => m !== monthNum));
+    }
+    this.syncMonthFilters();
   }
-
-  this.syncMonthFilters();
-}
-
 
   private syncMonthFilters(): void {
     const currentSelected = this.selectedMonths();
-
-    this.globalFilterArray.update(arr =>
-      arr.filter(f => !f.startsWith('month='))
-    );
-
-    currentSelected.forEach(month => {
-      this.addFilter(`month=${month}`);
-    });
-
+    this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('month=')));
+    currentSelected.forEach(month => this.addFilter(`month=${month}`));
     this.globalFilters.month = [...currentSelected];
     this.reloadTours();
     this.updateActiveFilterChips();
   }
 
-  clearMonths(): void {
-    this.selectedMonths.set([]);
-    this.syncMonthFilters();
-  }
-
   private addFilter(filter: string): void {
-    this.globalFilterArray.update(arr => {
-      if (!arr.includes(filter)) {
-        return [...arr, filter];
-      }
-      return arr;
-    });
+    this.globalFilterArray.update(arr => arr.includes(filter) ? arr : [...arr, filter]);
   }
 
   removeFilter(filter: string): void {
@@ -716,46 +551,26 @@ toggleMonth(month: Month, event: MatCheckboxChange): void {
     if (this.pageCountry) {
       this.currentPage = 1;
       this.loadTours(this.pageCountry.id, 1);
-
-     
     }
-
-     this.updateActiveFilterChips();
+    this.updateActiveFilterChips();
   }
 
+  private onSpecificDateSelected(dateStr: string): void {
+    this.selectedMonths.set([]);
+    this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('month=')));
+    this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
+    this.addFilter(`departure_date=${dateStr}`);
+    this.globalFilters.month = [];
+    this.globalFilters.departure_date = new Date(dateStr);
+    this.updateActiveFilterChips();
+  }
 
-  /* ==============================================================
-   SPECIFIC DATE SELECTED → CLEAR MONTHS & ADD DATE FILTER
-   ============================================================== */
-/* ==============================================================
-   SPECIFIC DATE SELECTED → CLEAR MONTHS & ADD DATE FILTER
-   ============================================================== */
-// 2. onSpecificDateSelected
-private onSpecificDateSelected(dateStr: string): void {
-  this.selectedMonths.set([]);
-  this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('month=')));
-  this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
-  this.addFilter(`departure_date=${dateStr}`);
+  private onSpecificDateCleared(): void {
+    this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
+    this.globalFilters.departure_date = undefined;
+    this.updateActiveFilterChips();
+  }
 
-  this.globalFilters.month = [];
-  this.globalFilters.departure_date = new Date(dateStr);
-
-  // this.reloadTours();   // ← UNCOMMENTED
-  this.updateActiveFilterChips();
-}
-/* ==============================================================
-   SPECIFIC DATE CLEARED → REMOVE DATE FILTER
-   ============================================================== */
-// 3. onSpecificDateCleared
-private onSpecificDateCleared(): void {
-  this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
-  this.globalFilters.departure_date = undefined;
-  // this.reloadTours();   // ← UNCOMMENTED
-  this.updateActiveFilterChips();
-}
-  /* ==============================================================
-     UTILITIES
-     ============================================================== */
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -763,265 +578,184 @@ private onSpecificDateCleared(): void {
     return `${year}-${month}-${day}`;
   }
 
-
   private updateActiveFilterChips(): void {
-  const chips: FilterChip[] = [];
+    const chips: FilterChip[] = [];
 
-  // Departure Date
-  if (this.globalFilters.departure_date) {
-    const dateStr = this.formatDate(this.globalFilters.departure_date);
-    chips.push({ key: `departure_date=${dateStr}`, label: `Departure: ${dateStr}` });
-  }
-
-  // Months
-  this.selectedMonths().forEach(monthNum => {
-    const month = this.months.find(m => m.value === monthNum);
-    if (month) {
-      chips.push({ key: `month=${monthNum}`, label: `Month: ${month.label}` });
+    if (this.globalFilters.departure_date) {
+      const dateStr = this.formatDate(this.globalFilters.departure_date);
+      chips.push({ key: `departure_date=${dateStr}`, label: `Departure: ${dateStr}` });
     }
-  });
 
-  // Start City
-  if (this.selectedStartCity) {
-    chips.push({ key: `start_city=${this.selectedStartCity.id}`, label: `Start: ${this.selectedStartCity.name}` });
-  }
-
-  // End City
-  if (this.selectedEndCity) {
-    chips.push({ key: `end_city=${this.selectedEndCity.id}`, label: `End: ${this.selectedEndCity.name}` });
-  }
-
-  // Price Range
-  if (this.minValue > this.minPrice || this.maxValue < this.maxPrice) {
-    chips.push({
-      key: `price=${this.minValue}-${this.maxValue}`,
-      label: `Price: ${this.selectedCurrency.symbol}${this.minValue} - ${this.selectedCurrency.symbol}${this.maxValue}`
+    this.selectedMonths().forEach(monthNum => {
+      const month = this.months.find(m => m.value === monthNum);
+      if (month) {
+        chips.push({ key: `month=${monthNum}`, label: `Month: ${month.label}` });
+      }
     });
-  }
 
-  // Adventure Styles
-  this.adventureStylesForm.controls.forEach((control, i) => {
-    if (control.value) {
-      const style = this.adventureStyles[i];
-      chips.push({ key: `adventure_style=${style.id}`, label: `Style: ${style.name}` });
+    if (this.selectedStartCity) {
+      chips.push({ key: `start_city=${this.selectedStartCity.id}`, label: `Start: ${this.selectedStartCity.name}` });
     }
-  });
 
-  // Search City
-if (this.selectedSearchCity) {
-  chips.push({ key: `search_city=${this.selectedSearchCity.id}`, label: `Search: ${this.selectedSearchCity.name}` });
-}
+    if (this.selectedEndCity) {
+      chips.push({ key: `end_city=${this.selectedEndCity.id}`, label: `End: ${this.selectedEndCity.name}` });
+    }
 
-  this.activeFilters.set(chips);
-  this.activeFilterCount.set(chips.length);
-}
+    if (this.minValue > this.minPrice || this.maxValue < this.maxPrice) {
+      chips.push({
+        key: `price=${this.minValue}-${this.maxValue}`,
+        label: `Price: ${this.selectedCurrency.symbol}${this.minValue} - ${this.selectedCurrency.symbol}${this.maxValue}`
+      });
+    }
 
+    this.adventureStylesForm.controls.forEach((control, i) => {
+      if (control.value) {
+        const style = this.adventureStyles[i];
+        chips.push({ key: `adventure_style=${style.id}`, label: `Style: ${style.name}` });
+      }
+    });
 
-removeFilterByKey(key: string, event: Event): void {
-  event.stopPropagation();
+    if (this.selectedSearchCity) {
+      chips.push({ key: `search_city=${this.selectedSearchCity.id}`, label: `Search: ${this.selectedSearchCity.name}` });
+    }
 
-  const [type, value] = key.split('=');
+    this.activeFilters.set(chips);
+    this.activeFilterCount.set(chips.length);
+  }
 
-  if (type === 'departure_date') {
+  removeFilterByKey(key: string, event: Event): void {
+    event.stopPropagation();
+    const [type, value] = key.split('=');
+
+    if (type === 'departure_date') {
+      this.selectedDepartureDate.setValue(null);
+      this.onSpecificDateCleared();
+    } else if (type === 'month') {
+      const monthNum = +value;
+      this.selectedMonths.update(arr => arr.filter(m => m !== monthNum));
+      this.syncMonthFilters();
+    } else if (type === 'start_city') {
+      this.selectedStartCity = null;
+      this.startCityControl.setValue('');
+      this.globalFilters.start_city = undefined;
+      this.removeFilter(key);
+      this.reloadTours();
+    } else if (type === 'end_city') {
+      this.selectedEndCity = null;
+      this.endCityControl.setValue('');
+      this.globalFilters.end_city = undefined;
+      this.removeFilter(key);
+      this.reloadTours();
+    } else if (type === 'price') {
+      this.minValue = this.minPrice;
+      this.maxValue = this.maxPrice;
+      this.globalFilters.min_price = undefined;
+      this.globalFilters.max_price = undefined;
+      this.reloadTours();
+    } else if (type === 'adventure_style') {
+      const styleId = +value;
+      const index = this.adventureStyles.findIndex(s => s.id === styleId);
+      if (index !== -1) {
+        this.adventureStylesForm.at(index).setValue(false);
+        this.onAdventureStyleChange(index, { checked: false } as MatCheckboxChange);
+      }
+    } else if (type === 'search_city') {
+      this.selectedSearchCity = null;
+      this.myControl.setValue('');
+      this.globalFilters.search_city = undefined;
+      this.removeFilter(key);
+      this.reloadTours();
+    }
+
+    this.updateActiveFilterChips();
+  }
+
+  clearAllFilters(): void {
     this.selectedDepartureDate.setValue(null);
-    this.onSpecificDateCleared();
-  }
-  else if (type === 'month') {
-    const monthNum = +value;
-    this.selectedMonths.update(arr => arr.filter(m => m !== monthNum));
-    this.syncMonthFilters();
-  }
-  else if (type === 'start_city') {
+    this.selectedMonths.set([]);
     this.selectedStartCity = null;
     this.startCityControl.setValue('');
-    this.globalFilters.start_city = undefined;
-    this.removeFilter(key);
-    this.reloadTours();
-  }
-  else if (type === 'end_city') {
     this.selectedEndCity = null;
     this.endCityControl.setValue('');
-    this.globalFilters.end_city = undefined;
-    this.removeFilter(key);
-    this.reloadTours();
-  }
-  else if (type === 'price') {
     this.minValue = this.minPrice;
     this.maxValue = this.maxPrice;
-    this.globalFilters.min_price = undefined;
-    this.globalFilters.max_price = undefined;
+    this.adventureStylesForm.controls.forEach(c => c.setValue(false));
+    this.selectedSearchCity = null;
+    this.myControl.setValue('');
+
+    this.globalFilters = {
+      min_price: undefined,
+      max_price: undefined,
+      month: [],
+      adventure_style: [],
+      start_city: undefined,
+      end_city: undefined,
+      departure_date: undefined,
+      search_city: undefined
+    };
+
+    this.globalFilterArray.set([]);
     this.reloadTours();
+    this.updateActiveFilterChips();
   }
-  else if (type === 'adventure_style') {
-    const styleId = +value;
-    const index = this.adventureStyles.findIndex(s => s.id === styleId);
-    if (index !== -1) {
-      this.adventureStylesForm.at(index).setValue(false);
-      this.onAdventureStyleChange(index, { checked: false } as MatCheckboxChange);
+
+  onFilterMenuClosed(): void {}
+
+  applyFilters(): void {
+    if (!this.pageCountry) return;
+
+    const params: any = {};
+
+    if (this.minValue > this.minPrice) params.min_price = this.minValue;
+    if (this.maxValue < this.maxPrice) params.max_price = this.maxValue;
+    if (this.selectedSearchCity) params.city_id = this.selectedSearchCity.id;
+    if (this.globalFilters.departure_date) {
+      params.departure_date = this.formatDate(this.globalFilters.departure_date);
     }
+    this.selectedMonths().forEach(monthNum => {
+      if (!params.month) params.month = [];
+      params.month.push(monthNum);
+    });
+    if (this.selectedStartCity) params.start_city = this.selectedStartCity.name;
+    if (this.selectedEndCity) params.end_city = this.selectedEndCity.name;
+    if (this.selectedSort) params.filter = this.selectedSort;
+
+    const baseUrl = `${this.backendUrlService.getTournTripUrl()}countries/${this.pageCountry.id}/tours/`;
+    const url = new URL(baseUrl);
+    Object.keys(params).forEach(key => {
+      if (Array.isArray(params[key])) {
+        params[key].forEach((val: any) => url.searchParams.append(key, val));
+      } else {
+        url.searchParams.set(key, params[key]);
+      }
+    });
+
+    this.loadingTours = true;
+    this.toursSub?.unsubscribe();
+    this.toursSub = this.http.get<ToursResponse>(url.toString()).subscribe({
+      next: (response) => {
+        this.tours = response.results;
+        this.totalTours = response.count;
+        this.totalPages = Math.ceil(this.totalTours / this.pageSize);
+        this.loadingTours = false;
+        this.currentPage = 1;
+      },
+      error: (err) => {
+        console.error('Failed to load tours:', err);
+        this.tours = [];
+        this.totalTours = 0;
+        this.totalPages = 0;
+        this.loadingTours = false;
+      }
+    });
+
+    this.updateActiveFilterChips();
   }
 
-  else if (type === 'search_city') {
-  this.selectedSearchCity = null;
-  this.myControl.setValue('');
-  this.globalFilters.search_city = undefined;
-  this.removeFilter(key);
-  this.reloadTours();
-}
+  toggleDeparture() { this.isDepartureOpen = !this.isDepartureOpen; }
+  toggleAdventure() { this.isAdventureStyles = !this.isAdventureStyles; }
+  toggleStartandEndCity() { this.isStartandEndCityOpen = !this.isStartandEndCityOpen; }
 
-  // Update chips
-  this.updateActiveFilterChips();
-}
-
-
-
-clearAllFilters(): void {
-  // Clear all UI
-  this.selectedDepartureDate.setValue(null);
-  this.selectedMonths.set([]);
-  this.selectedStartCity = null;
-  this.startCityControl.setValue('');
-  this.selectedEndCity = null;
-  this.endCityControl.setValue('');
-  this.minValue = this.minPrice;
-  this.maxValue = this.maxPrice;
-  this.adventureStylesForm.controls.forEach(c => c.setValue(false));
-  this.selectedSearchCity = null;
-this.myControl.setValue('');
-
-  // Clear all filters
-  this.globalFilters = {
-    min_price: undefined,
-    max_price: undefined,
-    month: [],
-    adventure_style: [],
-    start_city: undefined,
-    end_city: undefined,
-    departure_date: undefined,
-    search_city: undefined
-  };
-
-  this.globalFilterArray.set([]);
-
-  this.reloadTours();
-  this.updateActiveFilterChips();
-}
-
-
-onFilterMenuClosed(): void {
-  // Do nothing — prevents any value from being selected
-}
-
-  onStateChanged(sort: string, filters: string[]) {
-    console.log('Sort changed:', sort);
-    console.log('Filters changed:', filters);
-  }
-
-
-//   applyFilters(): void {
-
-//     console.log(this.globalFilters);
-//   // this.reloadTours();
-// }
-
-
-
-
-
-applyFilters(): void {
-  if (!this.pageCountry) return;
-
-  // Build query params object
-  const params: any = {};
-
-  // 1. Price range
-  if (this.minValue > this.minPrice) {
-    params.min_price = this.minValue;
-  }
-  if (this.maxValue < this.maxPrice) {
-    params.max_price = this.maxValue;
-  }
-
-  // 2. Search city → city_id
-  if (this.selectedSearchCity) {
-    params.city_id = this.selectedSearchCity.id;
-  }
-
-  // 3. Departure date
-  if (this.globalFilters.departure_date) {
-    const dateStr = this.formatDate(this.globalFilters.departure_date);
-    params.departure_date = dateStr;
-  }
-
-  // 4. Months
-  this.selectedMonths().forEach(monthNum => {
-    if (!params.month) params.month = [];
-    params.month.push(monthNum);
-  });
-
-  // 5. Start city (string)
-  if (this.selectedStartCity) {
-    params.start_city = this.selectedStartCity.name;
-  }
-
-  // 6. End city (string)
-  if (this.selectedEndCity) {
-    params.end_city = this.selectedEndCity.name;
-  }
-
-  // 7. Sorting
-  if (this.selectedSort) {
-    params.filter = this.selectedSort; // e.g., 'price=low'
-  }
-
-  // 8. Adventure styles (not in backend yet → skip for now)
-  // → Add later when backend supports ?adventure_style=1,2
-
-  // Build full URL
-  const baseUrl = `${this.backendUrlService.getTournTripUrl()}countries/${this.pageCountry.id}/tours/`;
-  const url = new URL(baseUrl);
-  Object.keys(params).forEach(key => {
-    if (Array.isArray(params[key])) {
-      params[key].forEach((val: any) => url.searchParams.append(key, val));
-    } else {
-      url.searchParams.set(key, params[key]);
-    }
-  });
-
-  console.log('Fetching tours from:', url.toString());
-
-  // Cancel previous request
-  this.toursSub?.unsubscribe();
-
-  // Make request
-  this.loadingTours = true;
-  this.toursSub = this.http.get<ToursResponse>(url.toString()).subscribe({
-    next: (response) => {
-      this.tours = response.results;
-      this.totalTours = response.count;
-      this.totalPages = Math.ceil(this.totalTours / this.pageSize);
-      this.loadingTours = false;
-      this.currentPage = 1;
-    },
-    error: (err) => {
-      console.error('Failed to load tours:', err);
-      this.tours = [];
-      this.totalTours = 0;
-      this.totalPages = 0;
-      this.loadingTours = false;
-    }
-  });
-
-  // Update chips
-  this.updateActiveFilterChips();
-}
-
-
-
-
-  /* ==============================================================
-     LIFECYCLE: ngOnDestroy
-     ============================================================== */
   ngOnDestroy(): void {
     this.countrySub?.unsubscribe();
     this.citiesSub?.unsubscribe();

@@ -96,12 +96,7 @@
         <div class="col-lg-2">
           <mat-form-field appearance="fill" class="w-80">
             <mat-label>
-              <img
-                src="assets/images/sort.png"
-                alt="sort"
-                class="me-1"
-               
-              />
+              <img src="assets/images/sort.png" alt="sort" class="me-1" />
               Applied filters
               <span
                 *ngIf="activeFilterCount() > 0"
@@ -156,24 +151,20 @@
           </mat-form-field>
         </div>
 
-
         <!-- Apply Filters Button -->
-<div class="col-lg-2 d-flex align-items-center justify-content-end">
-<button
-
-  mat-fab
-  color="primary"
-  class=""
-  (click)="applyFilters()"
-  title="Apply filters"
-  [disabled]="loadingTours"
->
-  <mat-icon *ngIf="!loadingTours">arrow_forward</mat-icon>
-  <mat-spinner *ngIf="loadingTours" diameter="20"></mat-spinner>
-</button>
-</div>
-
-
+        <div class="col-lg-2 d-flex align-items-center justify-content-end">
+          <button
+            mat-fab
+            color="primary"
+            class=""
+            (click)="applyFilters()"
+            title="Apply filters"
+            [disabled]="loadingTours"
+          >
+            <mat-icon *ngIf="!loadingTours">arrow_forward</mat-icon>
+            <mat-spinner *ngIf="loadingTours" diameter="20"></mat-spinner>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -209,13 +200,16 @@
         </mat-form-field>
 
         <!-- Month Filter -->
-        <div class="toggled-on">
-          <div class="toggle-title">
-            <i class="fa fa-angle-down"></i>
-            <i class="fa fa-angle-up"></i>
+        <div class="filter-section" [class.toggled-on]="isDepartureOpen">
+          <div class="toggle-title" (click)="toggleDeparture()">
             <h3>Departure date</h3>
+            <mat-icon
+              [class.hidden]="isDepartureOpen"
+              aria-label="Expand"
+              fontIcon="keyboard_arrow_down"
+            ></mat-icon>
           </div>
-          <div class="toggle-assets">
+          <div class="toggle-assets" *ngIf="isDepartureOpen">
             <div class="result-left">
               <div class="departer-nav1">
                 <ng-container *ngFor="let month of months">
@@ -233,52 +227,53 @@
           </div>
         </div>
 
-        <!-- Adventure Styles -->
-        <div class="toggled-on">
-          <div class="toggle-title">
-            <i class="fa fa-angle-down"></i>
-            <i class="fa fa-angle-up"></i>
-            <h3>Adventure Styles</h3>
-          </div>
-          <div class="toggle-assets">
-            <div class="result-left">
-              <div class="departer-nav1">
-                <div *ngIf="loadingAdventureStyles" class="loading-spinner">
-                  Loading adventure styles...
-                </div>
-
-                @for (style of adventureStyles; track style.id; let i = $index)
-                {
-                <div class="month-row">
-                  <mat-checkbox
-                    color="primary"
-                    [formControl]="adventureStylesForm.at(i)"
-                    (change)="onAdventureStyleChange(i, $event)"
-                  >
-                    {{ style.name }}
-                  </mat-checkbox>
-                </div>
-                }
-
-                <div
-                  *ngIf="
-                    !loadingAdventureStyles && adventureStyles.length === 0
-                  "
-                  class="no-styles"
-                >
-                  No adventure styles available.
-                </div>
-              </div>
-            </div>
-          </div>
+<!-- Adventure Styles -->
+<div class="filter-section" [class.toggled-on]="isAdventureStyles">
+  <div class="toggle-title" (click)="toggleAdventure()">
+    <h3>Adventure Styles</h3>
+    <mat-icon 
+      aria-label="Toggle"
+      fontIcon="keyboard_arrow_down"
+    ></mat-icon>
+  </div>
+  <div class="toggle-assets" *ngIf="isAdventureStyles">
+    <div class="result-left">
+      <div class="departer-nav1">
+        <div *ngIf="loadingAdventureStyles" class="loading-spinner">
+          Loading adventure styles...
         </div>
 
+        @for (style of adventureStyles; track style.id; let i = $index) {
+          <div class="month-row">
+            <mat-checkbox
+              color="primary"
+              [formControl]="adventureStylesForm.at(i)"
+              (change)="onAdventureStyleChange(i, $event)"
+            >
+              {{ style.name }}
+            </mat-checkbox>
+          </div>
+        }
+
+        <div
+          *ngIf="!loadingAdventureStyles && adventureStyles.length === 0"
+          class="no-styles"
+        >
+          No adventure styles available.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
         <!-- Start & End City -->
-        <div class="toggled-on">
-          <div class="toggle-title">
-            <i class="fa fa-angle-down"></i>
-            <i class="fa fa-angle-up"></i>
+<div class="filter-section" [class.toggled-on]="isStartandEndCityOpen">
+  <div class="toggle-title" (click)="toggleStartandEndCity()">
             <h3>Start & ending city</h3>
+                <mat-icon 
+      aria-label="Toggle"
+      fontIcon="keyboard_arrow_down"
+    ></mat-icon>
           </div>
           <div class="toggle-assets">
             <div class="result-left">
@@ -362,9 +357,9 @@
           <div class="package-result-1">
             <div class="result-lftnav">
               <img
-                src="assets/images/japan-banner-1.png"
-                class="img-fluid"
-                alt="{{ tour.title }}"
+[src]="tour.image || 'assets/images/japan-banner-1.png'"
+      class="img-fluid"
+      [alt]="tour.title"
               />
             </div>
             <div class="result-rgtnav">
@@ -372,7 +367,7 @@
               <hr />
               <p>Duration: {{ tour.duration_display }}</p>
               <span>
-                {{ tour.rating }} <i class="fa fa-star"></i> ({{
+                {{ tour.rating }} <i class="bi bi-star-fill"></i> ({{
                   tour.no_of_reviews
                 }}
                 reviews)
@@ -398,7 +393,8 @@
             <a href="" class="green">{{ tour.discount_percentage }}% OFF</a>
             <br />
             <a class="btn-new1" [routerLink]="['/payment', tour.id]"
-              >Get Pricing</a>
+              >Get Pricing</a
+            >
           </div>
         </div>
 
