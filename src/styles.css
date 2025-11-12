@@ -4678,6 +4678,7 @@ footer img{
 }
 .contect-us .detail-contect .nameplace-1 .input-group-prepend input::placeholder {
     color: #000000;
+
 }
 .ui-widget-content {
     border: 1px solid #dddddd;
@@ -4695,6 +4696,7 @@ footer img{
 .checkin .rgt-nav{width:48%;}
 .input-group-prepend {
     position: relative;
+    display:flex;
 }
 #quantityBox{
     position: absolute;
@@ -5559,7 +5561,7 @@ footer img{
 
 
 
-@media (max-width:767px) {
+@media (max-width:991px) {
 .whereto-go {
     width: 100%;
     display: block;

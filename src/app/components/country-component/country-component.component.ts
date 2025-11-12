@@ -33,6 +33,7 @@ import { Country } from '../../models/country.model';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { signal, WritableSignal } from '@angular/core';
 
+
 export interface User {
   name: string;
 }
@@ -89,7 +90,7 @@ interface Filters {
   start_city?: number;
   end_city?: number;
   departure_date?: Date;
-  search_city?: number;
+  search_city?: string;
 }
 
 interface Month {
@@ -123,18 +124,23 @@ interface FilterChip {
     SearchBarComponent,
     MatCheckboxModule,
     MatProgressSpinnerModule,
-    MatButtonModule
+    MatButtonModule,
   ],
   templateUrl: './country-component.component.html',
   styleUrl: './country-component.component.css',
   encapsulation: ViewEncapsulation.None
 })
 export class CountryComponentComponent implements OnInit, OnDestroy {
+
+
+  // Inside your CountryComponentComponent class
+today: Date = new Date();
+
   /* PRICE SLIDER */
   minPrice = 100;
-  maxPrice = 10000;
+  maxPrice = 50000;
   minValue = 100;
-  maxValue = 5000;
+  maxValue = 50000;
 
   /* CURRENCY */
   private currencies: Currency[] = [
@@ -247,7 +253,8 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
 
     if (this.pageCountry) {
       this.loadDestinationCities(this.pageCountry.id);
-      this.loadTours(this.pageCountry.id);
+      // this.loadTours(this.pageCountry.id);
+      this.loadToursWithCurrentFilters(1);
     }
 
     this.handleCountryRouting();
@@ -277,9 +284,9 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
         this.router.navigate([`/${targetCountry}`], { replaceUrl: true });
       }
 
-      if (this.selectedCountry === 'india') {
-        this.selectedCurrency = this.currencies.find(c => c.code === 'INR')!;
-      }
+      // if (this.selectedCountry === 'india') {
+      //   this.selectedCurrency = this.currencies.find(c => c.code === 'INR')!;
+      // }
     }
   }
 
@@ -398,8 +405,8 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
       this.removeFilter(`search_city=${this.selectedSearchCity.id}`);
     }
     this.selectedSearchCity = city;
-    this.globalFilters.search_city = city.id;
-    this.addFilter(`search_city=${city.id}`);
+    this.globalFilters.search_city = city.name
+    this.addFilter(`search_city=${city.name}`);
     this.reloadTours();
     this.updateActiveFilterChips();
   }
@@ -452,6 +459,12 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
     this.updateActiveFilterChips();
   }
 
+  getSelectedAdventureStyles(): number[] {
+  return this.adventureStylesForm.controls
+    .map((control, index) => control.value ? this.adventureStyles[index].id : null)
+    .filter((id): id is number => id !== null);
+}
+
   private grabToursnTrips(countryId: number, page: number = 1): Observable<ToursResponse> {
     const url = `${this.backendUrlService.getTournTripUrl()}countries/${countryId}/tours/?page=${page}&page_size=${this.pageSize}`;
     return this.http.get<ToursResponse>(url).pipe(
@@ -485,17 +498,89 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToPreviousPage(): void {
-    if (this.currentPage > 1 && this.pageCountry) {
-      this.loadTours(this.pageCountry.id, this.currentPage - 1);
-    }
+
+
+
+
+  // Replace loadTours() and update pagination
+private loadToursWithCurrentFilters(page: number = 1): void {
+  if (!this.pageCountry) return;
+
+  const params: any = {};
+  const baseUrl = `${this.backendUrlService.getTournTripUrl()}countries/${this.pageCountry.id}/tours/`;
+  const url = new URL(baseUrl);
+
+  // === Rebuild ALL current filters ===
+  if (this.minValue > this.minPrice) params.min_price = this.minValue;
+  if (this.maxValue < this.maxPrice) params.max_price = this.maxValue;
+  if (this.selectedSearchCity) params.city_name = this.selectedSearchCity.name;
+  if (this.globalFilters.departure_date) {
+    params.departure_date = this.formatDate(this.globalFilters.departure_date);
+  }
+  this.selectedMonths().forEach(m => {
+    if (!params.month) params.month = [];
+    params.month.push(m);
+  });
+  if (this.selectedStartCity) params.start_city = this.selectedStartCity.name;
+  if (this.selectedEndCity) params.end_city = this.selectedEndCity.name;
+  if (this.selectedSort) params.filter = this.selectedSort;
+
+  // === NEW: Adventure styles ===
+  const selectedStyles = this.getSelectedAdventureStyles();
+  if (selectedStyles.length > 0) {
+    params.adventure_style = selectedStyles;   // array → will be appended multiple times
   }
 
-  goToNextPage(): void {
-    if (this.currentPage < this.totalPages && this.pageCountry) {
-      this.loadTours(this.pageCountry.id, this.currentPage + 1);
+  // === Add pagination ===
+  url.searchParams.set('page', page.toString());
+  url.searchParams.set('page_size', this.pageSize.toString());
+
+  // === Append all other params ===
+  Object.keys(params).forEach(key => {
+    if (Array.isArray(params[key])) {
+      params[key].forEach((val: any) => url.searchParams.append(key, val));
+    } else {
+      url.searchParams.set(key, params[key]);
     }
+  });
+
+  console.log('Loading tours from:', url.toString());
+
+  this.loadingTours = true;
+  this.toursSub?.unsubscribe();
+
+  this.toursSub = this.http.get<ToursResponse>(url.toString()).subscribe({
+    next: (response) => {
+      this.tours = response.results;
+      this.totalTours = response.count;
+      this.totalPages = Math.ceil(this.totalTours / this.pageSize);
+      this.currentPage = page;
+      this.loadingTours = false;
+    },
+    error: (err) => {
+      console.error('Failed to load tours:', err);
+      this.tours = [];
+      this.totalTours = 0;
+      this.totalPages = 0;
+      this.loadingTours = false;
+    }
+  });
+}
+
+
+
+  goToPreviousPage(): void {
+  if (this.currentPage > 1) {
+    this.loadToursWithCurrentFilters(this.currentPage - 1);
   }
+}
+
+goToNextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.loadToursWithCurrentFilters(this.currentPage + 1);
+  }
+}
+
 
   trackByTourId(index: number, tour: Tour): number {
     return tour.id;
@@ -508,13 +593,16 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
   }
 
   onSortChange(): void {
-    if (!this.selectedSort) {
-      this.router.navigate([], { queryParams: {}, queryParamsHandling: 'merge' });
-      return;
-    }
-    const [key, value] = this.selectedSort.split('=');
-    const queryParams: any = { [key]: value };
-    this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
+    // if (!this.selectedSort) {
+    //   this.router.navigate([], { queryParams: {}, queryParamsHandling: 'merge' });
+    //   return;
+    // }
+    // const [key, value] = this.selectedSort.split('=');
+    // const queryParams: any = { [key]: value };
+    // this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
+
+
+    this.reloadTours();
   }
 
   toggleMonth(month: Month, event: MatCheckboxChange): void {
@@ -548,10 +636,11 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
   }
 
   private reloadTours(): void {
-    if (this.pageCountry) {
-      this.currentPage = 1;
-      this.loadTours(this.pageCountry.id, 1);
-    }
+    // if (this.pageCountry) {
+      // this.currentPage = 1;
+      // this.loadTours(this.pageCountry.id, 1);
+      // this.loadToursWithCurrentFilters(1);
+    // }
     this.updateActiveFilterChips();
   }
 
@@ -619,6 +708,17 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
       chips.push({ key: `search_city=${this.selectedSearchCity.id}`, label: `Search: ${this.selectedSearchCity.name}` });
     }
 
+    // ----- NEW: SORT CHIP -----
+  if (this.selectedSort) {
+    const option = this.sortingOptions.find(o => o.value === this.selectedSort);
+    if (option) {
+      chips.push({
+        key: `sort=${this.selectedSort}`,               // unique key
+        label: `Sort: ${option.label}`
+      });
+    }
+  }
+
     this.activeFilters.set(chips);
     this.activeFilterCount.set(chips.length);
   }
@@ -666,6 +766,11 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
       this.removeFilter(key);
       this.reloadTours();
     }
+    // ----- NEW: SORT -----
+  else if (type === 'sort') {
+    this.selectedSort = '';               // reset model
+    this.onSortChange();                  // clean URL + reload
+  }
 
     this.updateActiveFilterChips();
   }
@@ -694,6 +799,8 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
       search_city: undefined
     };
 
+    this.selectedSort = ''; 
+
     this.globalFilterArray.set([]);
     this.reloadTours();
     this.updateActiveFilterChips();
@@ -701,56 +808,66 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
 
   onFilterMenuClosed(): void {}
 
+  // applyFilters(): void {
+  //   if (!this.pageCountry) return;
+
+  //   const params: any = {};
+
+  //   if (this.minValue > this.minPrice) params.min_price = this.minValue;
+  //   if (this.maxValue < this.maxPrice) params.max_price = this.maxValue;
+
+  //   if (this.selectedSearchCity) params.city_id = this.selectedSearchCity.id;
+
+  //   if (this.globalFilters.departure_date) {
+  //     params.departure_date = this.formatDate(this.globalFilters.departure_date);
+  //   }
+  //   this.selectedMonths().forEach(monthNum => {
+  //     if (!params.month) params.month = [];
+  //     params.month.push(monthNum);
+  //   });
+  //   if (this.selectedStartCity) params.start_city = this.selectedStartCity.name;
+  //   if (this.selectedEndCity) params.end_city = this.selectedEndCity.name;
+  //   if (this.selectedSort) params.filter = this.selectedSort;
+
+  //   const baseUrl = `${this.backendUrlService.getTournTripUrl()}countries/${this.pageCountry.id}/tours/`;
+  //   const url = new URL(baseUrl);
+  //   Object.keys(params).forEach(key => {
+  //     if (Array.isArray(params[key])) {
+  //       params[key].forEach((val: any) => url.searchParams.append(key, val));
+  //     } else {
+  //       url.searchParams.set(key, params[key]);
+  //     }
+  //   });
+
+  //   console.log("Requsting URL",url);
+
+  //   this.loadingTours = true;
+  //   this.toursSub?.unsubscribe();
+  //   this.toursSub = this.http.get<ToursResponse>(url.toString()).subscribe({
+  //     next: (response) => {
+  //       this.tours = response.results;
+  //       this.totalTours = response.count;
+  //       this.totalPages = Math.ceil(this.totalTours / this.pageSize);
+  //       this.loadingTours = false;
+  //       this.currentPage = 1;
+  //     },
+  //     error: (err) => {
+  //       console.error('Failed to load tours:', err);
+  //       this.tours = [];
+  //       this.totalTours = 0;
+  //       this.totalPages = 0;
+  //       this.loadingTours = false;
+  //     }
+  //   });
+
+  //   this.updateActiveFilterChips();
+  // }
+
+
   applyFilters(): void {
-    if (!this.pageCountry) return;
-
-    const params: any = {};
-
-    if (this.minValue > this.minPrice) params.min_price = this.minValue;
-    if (this.maxValue < this.maxPrice) params.max_price = this.maxValue;
-    if (this.selectedSearchCity) params.city_id = this.selectedSearchCity.id;
-    if (this.globalFilters.departure_date) {
-      params.departure_date = this.formatDate(this.globalFilters.departure_date);
-    }
-    this.selectedMonths().forEach(monthNum => {
-      if (!params.month) params.month = [];
-      params.month.push(monthNum);
-    });
-    if (this.selectedStartCity) params.start_city = this.selectedStartCity.name;
-    if (this.selectedEndCity) params.end_city = this.selectedEndCity.name;
-    if (this.selectedSort) params.filter = this.selectedSort;
-
-    const baseUrl = `${this.backendUrlService.getTournTripUrl()}countries/${this.pageCountry.id}/tours/`;
-    const url = new URL(baseUrl);
-    Object.keys(params).forEach(key => {
-      if (Array.isArray(params[key])) {
-        params[key].forEach((val: any) => url.searchParams.append(key, val));
-      } else {
-        url.searchParams.set(key, params[key]);
-      }
-    });
-
-    this.loadingTours = true;
-    this.toursSub?.unsubscribe();
-    this.toursSub = this.http.get<ToursResponse>(url.toString()).subscribe({
-      next: (response) => {
-        this.tours = response.results;
-        this.totalTours = response.count;
-        this.totalPages = Math.ceil(this.totalTours / this.pageSize);
-        this.loadingTours = false;
-        this.currentPage = 1;
-      },
-      error: (err) => {
-        console.error('Failed to load tours:', err);
-        this.tours = [];
-        this.totalTours = 0;
-        this.totalPages = 0;
-        this.loadingTours = false;
-      }
-    });
-
-    this.updateActiveFilterChips();
-  }
+  this.loadToursWithCurrentFilters(1); // ← Always reset to page 1
+  this.updateActiveFilterChips();
+}
 
   toggleDeparture() { this.isDepartureOpen = !this.isDepartureOpen; }
   toggleAdventure() { this.isAdventureStyles = !this.isAdventureStyles; }

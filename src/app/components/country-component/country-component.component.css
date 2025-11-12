@@ -520,3 +520,34 @@
 .departer-nav1 {
   padding: 8px 0;  /* Optional: Add padding inside for better spacing */
 }
+
+@media (min-width: 992px) {
+  .price .col-lg {
+    border-bottom: 0 !important;
+    border-right: 1px solid #333333;
+  }
+
+  /* Remove border on last column */
+  .price .col-lg:last-child {
+    border-right: 0;
+  }
+}
+
+
+
+
+.material-primary-badge {
+  background-color: #3f51b5 !important;  /* Material primary 500 */
+  color: #fff !important;
+}
+
+
+.slider-90 {
+  width: 80% !important;
+  max-width: none !important;
+}
+@media (min-width: 992px) {
+  .slider-90 {
+    width: 90% !important;
+  }
+}
