@@ -16,11 +16,6 @@
   </div>
 </section>
 
-
-
-
-
-
 <!-- SECTION 2: Filters & Sort -->
 <section class="most-poplar py-3 ">
   <div class="container">
@@ -269,7 +264,7 @@
         <!-- Start & End City -->
         <div class="filter-section" [class.toggled-on]="isStartandEndCityOpen">
           <div class="toggle-title" (click)="toggleStartandEndCity()">
-            <h3>Start & ending city</h3>
+            <h3>Start & ending destinations</h3>
             <mat-icon
               aria-label="Toggle"
               fontIcon="keyboard_arrow_down"
@@ -281,7 +276,7 @@
                 <!-- START CITY -->
                 <form class="example-form">
                   <mat-form-field class="example-full-width">
-                    <mat-label>Search start city</mat-label>
+                    <mat-label>Search start destination</mat-label>
                     <input
                       type="text"
                       matInput
@@ -307,7 +302,7 @@
                 <!-- END CITY -->
                 <form class="example-form">
                   <mat-form-field class="example-full-width">
-                    <mat-label>Search end city</mat-label>
+                    <mat-label>Search end destination</mat-label>
                     <input
                       type="text"
                       matInput

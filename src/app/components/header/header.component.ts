@@ -1,3 +1,4 @@
+// Updated header.component.ts - Merge countries and set to service
 import { Component, ViewChild, ElementRef, OnInit, ChangeDetectorRef, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -10,12 +11,14 @@ import { isPlatformBrowser } from '@angular/common';
 
 import { BackendUrlService } from '../../services/backend-url.service';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError } from 'rxjs';
+import { Observable, tap, catchError, forkJoin } from 'rxjs';
 import { throwError } from 'rxjs';
 
 import { Country } from '../../models/country.model';
 import { TourntripCountryService } from '../../services/tourntrip-country.service';
 import { RequestingLocationService } from '../../services/requesting-location.service';
+import { CountriesService } from '../../services/countries.service'; // Import new service
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-header',
@@ -27,7 +30,8 @@ import { RequestingLocationService } from '../../services/requesting-location.se
     MatSelectModule,
     MatInputModule,
     FormsModule,
-    NgbDropdownModule
+    NgbDropdownModule,
+    MatIconModule
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
@@ -40,6 +44,10 @@ export class HeaderComponent implements OnInit {
   /* the actual <div class="dropdown-menu-wrapper"> elements */
   @ViewChild('destinationsMenu') destinationsMenu!: ElementRef;
   @ViewChild('waysMenu') waysMenu!: ElementRef;
+
+  /* toggler elements for click handling */
+  @ViewChild('destinationsToggler') destinationsToggler!: ElementRef;
+  @ViewChild('waysToggler') waysToggler!: ElementRef;
 
   @ViewChild('toggler') toggler!: ElementRef;
 
@@ -75,6 +83,7 @@ export class HeaderComponent implements OnInit {
     private http: HttpClient,
     private tourntripsCountryService: TourntripCountryService,
     private requestingLocationService: RequestingLocationService,
+    private countriesService: CountriesService, // Inject service
   ) {}
 
   ngOnInit(): void {
@@ -83,34 +92,39 @@ export class HeaderComponent implements OnInit {
       this.requestingLocationCountry = country || 'USA';  // ← fallback only if empty
     });
 
-    this.getCountries(1).subscribe({
-      next: (data) => this.asiaCountries = data.countries,
-      error: (err) => console.error(err)
-    });
+    // Fetch all continents in parallel and merge
+    const requests = [
+      this.getCountries(1),
+      this.getCountries(2),
+      this.getCountries(3),
+      this.getCountries(4),
+      this.getCountries(5),
+      this.getCountries(6)
+    ];
 
-    this.getCountries(2).subscribe({
-      next: (data) => this.africaCountries = data.countries,
-      error: (err) => console.error(err)
-    });
+    forkJoin(requests).subscribe({
+      next: (responses) => {
+        // Assign to regional arrays
+        this.asiaCountries = responses[0]?.countries || [];
+        this.africaCountries = responses[1]?.countries || [];
+        this.australiaCountries = responses[2]?.countries || [];
+        this.europeCountries = responses[3]?.countries || [];
+        this.latinAmericaCountries = responses[4]?.countries || [];
+        this.middleEastCountries = responses[5]?.countries || [];
 
-    this.getCountries(3).subscribe({
-      next: (data) => this.australiaCountries = data.countries,
-      error: (err) => console.error(err)
-    });
-
-    this.getCountries(4).subscribe({
-      next: (data) => this.europeCountries = data.countries,
-      error: (err) => console.error(err)
-    });
-
-    this.getCountries(5).subscribe({
-      next: (data) => this.latinAmericaCountries = data.countries,
-      error: (err) => console.error(err)
-    });
-
-    this.getCountries(6).subscribe({
-      next: (data) => this.middleEastCountries = data.countries,
-      error: (err) => console.error(err)
+        // Merge all countries and share via service
+        const allCountries = [
+          ...this.asiaCountries,
+          ...this.africaCountries,
+          ...this.australiaCountries,
+          ...this.europeCountries,
+          ...this.latinAmericaCountries,
+          ...this.middleEastCountries
+        ];
+        this.countriesService.setCountries(allCountries);
+        console.log('All countries loaded and shared:', allCountries.length);
+      },
+      error: (err) => console.error('Failed to load countries:', err)
     });
   }
 
@@ -182,16 +196,49 @@ export class HeaderComponent implements OnInit {
 
     if (this.destinationsDropdown?.isOpen()) {
       const menuEl = this.destinationsMenu?.nativeElement as HTMLElement;
-      if (menuEl && !menuEl.contains(target)) {
+      const togglerEl = this.destinationsToggler?.nativeElement as HTMLElement;
+      if (menuEl && togglerEl && !menuEl.contains(target) && target !== togglerEl) {
         this.destinationsDropdown.close();
       }
     }
 
     if (this.waysDropdown?.isOpen()) {
       const menuEl = this.waysMenu?.nativeElement as HTMLElement;
-      if (menuEl && !menuEl.contains(target)) {
+      const togglerEl = this.waysToggler?.nativeElement as HTMLElement;
+      if (menuEl && togglerEl && !menuEl.contains(target) && target !== togglerEl) {
         this.waysDropdown.close();
       }
+    }
+  }
+
+  onDestinationsClick() {
+    this.toggleDropdown('destinations');
+  }
+
+  onWaysClick() {
+    this.toggleDropdown('ways');
+  }
+
+  private toggleDropdown(type: 'destinations' | 'ways') {
+    const targetDropdown = type === 'destinations' ? this.destinationsDropdown : this.waysDropdown;
+    const otherDropdown = type === 'destinations' ? this.waysDropdown : this.destinationsDropdown;
+    const otherType = type === 'destinations' ? 'ways' : 'destinations';
+
+    // Close other if open
+    if (otherDropdown?.isOpen()) {
+      otherDropdown.close();
+      if (this.activeHoverType === otherType) {
+        this.activeHoverType = null;
+      }
+    }
+
+    // Toggle target
+    if (targetDropdown.isOpen()) {
+      targetDropdown.close();
+      this.activeHoverType = null;
+    } else {
+      targetDropdown.open();
+      this.activeHoverType = type;
     }
   }
 
@@ -205,9 +252,14 @@ export class HeaderComponent implements OnInit {
 
     const targetDropdown = type === 'destinations' ? this.destinationsDropdown : this.waysDropdown;
     const otherDropdown = type === 'destinations' ? this.waysDropdown : this.destinationsDropdown;
+    const otherType = type === 'destinations' ? 'ways' : 'destinations';
 
+    // Close other if open
     if (otherDropdown?.isOpen()) {
       otherDropdown.close();
+      if (this.activeHoverType === otherType) {
+        this.activeHoverType = null;
+      }
     }
 
     this.activeHoverType = type;
@@ -217,18 +269,19 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  onMenuLeave(type: 'destinations' | 'ways', event?: MouseEvent) {
-    if (this.activeHoverType !== type) return;
+onMenuLeave(type: 'destinations' | 'ways', event?: MouseEvent) {
+  if (this.activeHoverType !== type) return;
 
-    const dropdown = type === 'destinations' ? this.destinationsDropdown : this.waysDropdown;
+  const dropdown = type === 'destinations' ? this.destinationsDropdown : this.waysDropdown;
 
-    this.hoverTimeout = setTimeout(() => {
-      if (this.activeHoverType === type && dropdown?.isOpen()) {
-        dropdown.close();
-        this.activeHoverType = null;
-      }
-    }, 100);
-  }
+  this.hoverTimeout = setTimeout(() => {
+    // Always attempt close, then clear active regardless of open state
+    if (dropdown?.isOpen()) {
+      dropdown.close();
+    }
+    this.activeHoverType = null;  // ← ADD THIS: Clear even if already closed
+  }, 100);  // Or use your CLOSE_DELAY = 250 for consistency
+}
 
   @HostListener('document:mousedown', ['$event'])
   onDocumentMouseDown(event: MouseEvent) {

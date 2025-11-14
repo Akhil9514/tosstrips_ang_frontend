@@ -6,6 +6,21 @@ import { AppComponent } from './app/app.component';
 import { register as registerSwiper } from 'swiper/element/bundle';
 
 
+export const environment = {
+  production: true,
+
+  mode: 'Dev'
+} 
+
+if (environment.production) {
+  window.console.log = () => {};
+  window.console.warn = () => {};
+  window.console.error = () => {};
+  window.onerror = () => true;
+}
+
+
+
 // Register Swiper web components globally
 registerSwiper();
 

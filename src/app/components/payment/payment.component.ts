@@ -16,6 +16,7 @@ import { BackendUrlService } from '../../services/backend-url.service';
 import { MatMenuModule } from '@angular/material/menu'; // Add this import
 import { RequestingLocationService } from '../../services/requesting-location.service'; // Add this import
 import Swal from 'sweetalert2';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-payment',
@@ -30,7 +31,8 @@ import Swal from 'sweetalert2';
     MatButtonModule,
     MatIconModule,
     MatNativeDateModule,
-    MatMenuModule
+    MatMenuModule,
+    MatCheckbox
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'

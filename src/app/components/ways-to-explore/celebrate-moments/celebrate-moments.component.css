@@ -1,0 +1,107 @@
+.item {
+  position: relative !important; /* If overlay needed; otherwise, flexbox below */
+  display: flex !important;
+  flex-direction: column !important; /* Stacks img vertically, then centers text */
+  align-items: center !important; /* Vertical centering if needed */
+  justify-content: left !important; /* Horizontal centering for children */
+  text-align: left !important; /* Centers inline text like h3/p */
+  width: 100% !important;
+  max-width: 800px !important; /* Optional: Limit width for better readability */
+  margin: 0 auto !important; /* Centers the entire .item in its swiper-slide */
+  padding: 20px !important; /* Optional: Breathing room */
+}
+
+.celebrations {
+  margin-top: 20px !important; /* Space from image */
+  width: 80% !important; /* Adjusted to 80% width */
+  margin-left: auto !important; /* Explicitly centers the block horizontally */
+  margin-right: auto !important;
+  /* If you want overlay instead:
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  background: rgba(0, 0, 0, 0.7) !important; /* Dark bg for readability over img */
+  color: white !important;
+  padding: 20px !important;
+  border-radius: 0 8px 8px 0 !important;
+  
+}
+
+.item img {
+  width: 100% !important;
+  height: auto !important; /* Responsive */
+  border-radius: 8px !important; /* Optional: Rounded image */
+}
+
+/* Swiper-specific: Ensure slides are full-width/centered */
+.swiper-slide {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.seasonal-holiday .my-swiper .swiper-slide {
+  height: 300px; /* Fixed height for consistent slide sizing; adjust as needed */
+  overflow: hidden; /* Prevent content spillover */
+  border-radius: 8px; /* Optional: Rounded corners for slides */
+}
+
+.seasonal-holiday .item {
+  position: relative !important; /* Creates positioning context for overlay */
+  width: 100% !important;
+  height: 100% !important; /* Fills the slide height */
+}
+
+.seasonal-holiday .item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important; /* Scales image to fill without distortion */
+  display: block !important; /* Removes any inline spacing */
+}
+
+.seasonal-holiday .christmas {
+  position: absolute !important; /* Overlays on image */
+  top: 20px !important; /* Margin from top */
+  left: 20px !important; /* Margin from left */
+  z-index: 2 !important; /* Ensures it's above the image */
+  background: rgba(0, 0, 0, 0.5); /* Optional: Semi-transparent bg for readability */
+  padding: 10px 15px !important; /* Inner padding for text breathing room */
+  border-radius: 4px !important; /* Optional: Rounded text box */
+}
+
+.seasonal-holiday .christmas h3 {
+  margin: 0 !important; /* Remove default margins */
+  color: white !important; /* High contrast */
+  font-size: 1.5rem !important; /* Adjust size if needed */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8) !important; /* Shadow for edge readability over images */
+  font-weight: bold !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+  .seasonal-holiday .my-swiper .swiper-slide {
+    height: 250px; /* Shorter on mobile */
+  }
+  
+  .seasonal-holiday .christmas {
+    top: 15px !important;
+    left: 15px !important;
+    padding: 8px 12px !important;
+  }
+  
+  .seasonal-holiday .christmas h3 {
+    font-size: 1.2rem !important;
+  }
+}

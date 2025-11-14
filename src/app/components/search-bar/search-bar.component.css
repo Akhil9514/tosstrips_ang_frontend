@@ -1,91 +1,121 @@
-.whereto-go{
-  width: 93%;
-  margin: 0 auto 0;
-  /* float: left; */
-  box-shadow: 0px 3px 4px 0px rgb(12 6 14 / 14%);
-  -webkit-box-shadow: 0px 3px 4px 0px rgb(12 6 14 / 14%);
-  border: 1px solid #e7e7e7;
-  border-radius: 39px;
-  display: flex;
-  justify-content: space-between;
-  padding: 26px 17px;
-  align-items: center;
-}
-.whereto-go .when{
-  width: 88%;
-  margin-right:5%;
-}
-.whereto-go ul{
-  margin:0;
-  padding:0;
-  display: flex;
-  justify-content: space-between;
+/* Updated search-bar.component.css - Existing styles apply to countries too (same classes) */
 
-  }
-.whereto-go ul li{
-  display: inline-flex;
-  list-style-type: none;
- 
-}
-.whereto-go ul li img{
-  height:22px;
-  margin-right:10px;
-}
-.whereto-go ul li input{
-  border:0;
-  font-size: 16px;
-  font-weight: 600;
-  width:100%;
-}
-.whereto-go .when-btn{
-  width: 4.6%;
-}
-.whereto-go .when-btn a{
-    background: #00154c;
-    width: 47px;
-    height: 47px;
-    display: inline-block;
-    text-align: center;
-    padding-top: 12px;
-    color: #fff;
-    border-radius: 50%;
-}
-.whereto-go .when-btn a i{font-size: 22px;}
-
-@media (max-width:767px) {
-.whereto-go {
-    width: 100%;
-    display: block;
-}
-.whereto-go ul {
-    display: block;
-}
-.whereto-go .when {
-    width: 100%;
-    margin-right: 0;
-}
-.whereto-go ul li.gray{display:none;}
-.whereto-go ul li {
-    display: inline-flex;
-    list-style-type: none;
-    padding: 10px 0 10px;
-    border-bottom: 1px solid #c2c2;
-    width: 100%;
-}
-.whereto-go .when-btn {
-    width: 100%;
-    text-align: center;
-    margin-top: 18px;
+/* Override Material Autocomplete Panel to match your custom dropdown */
+.mat-autocomplete-panel {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: white !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+  max-height: 200px !important;
+  overflow-y: auto !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  z-index: 1050 !important;
+  min-width: 200px !important;
+  /* Remove Material defaults */
+  min-width: unset !important;
+  max-width: unset !important;
+  font-family: inherit !important;
 }
 
-.whereto-go ul li input {
-    border: 0;
-    font-size: 14px;
-    font-weight: 600;
-    width: 100%;
-}
-.whereto-go{
-    padding: 14px 7px;
+/* Override mat-option to match your .autocomplete-option */
+.custom-mat-option {
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+  border-bottom: 1px solid #eee !important;
+  display: block !important;
+  width: 100% !important;
+  /* Remove Material hover/ripple */
+  background: transparent !important;
+  line-height: normal !important;
 }
 
+.custom-mat-option:hover {
+  background-color: #f5f5f5 !important;
+}
+
+.custom-mat-option.mat-option-disabled {
+  color: #999 !important;
+  font-style: italic !important;
+  cursor: not-allowed !important;
+}
+
+.option-name {
+  display: block !important;
+  font-weight: normal !important;
+}
+
+.option-description {
+  display: block !important;
+  color: #666 !important;
+  font-size: 0.85em !important;
+  margin-top: 2px !important;
+  opacity: 0.8 !important;
+}
+
+/* Loading/No Results - Match your styles */
+.loading-indicator,
+.no-results {
+  padding: 12px !important;
+  text-align: center !important;
+  color: #999 !important;
+  font-style: italic !important;
+}
+
+.loading-indicator::after {
+  content: '...' !important;
+  animation: dots 1.5s steps(5, end) infinite !important;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* Ensure input doesn't get Material styles */
+input[matAutocomplete] {
+  /* Your existing input styles */
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  /* No Material underline or padding */
+}
+
+/* Add these styles to search-bar.component.css to keep date input looking native */
+
+/* Ensure date input matches other inputs (transparent, no Material underline) */
+.date-input {
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  padding: 5px !important;
+  cursor: pointer !important; /* Indicate clickable */
+}
+
+/* Override Material datepicker panel positioning (similar to autocomplete) */
+.mat-datepicker-content {
+  position: absolute !important;
+  z-index: 1050 !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  border-radius: 4px !important;
+}
+
+/* Optional: Style the calendar header/footer if needed */
+.mat-calendar-header {
+  background: #f5f5f5 !important;
+  border-bottom: 1px solid #ddd !important;
+}
+
+.mat-calendar-body-cell-content {
+  font-size: 14px !important;
+}
+
+/* Disable past dates visually (Material handles minDate, but enhance) */
+.mat-calendar-body-disabled > .mat-calendar-body-cell-content {
+  color: #ccc !important;
+  cursor: not-allowed !important;
 }

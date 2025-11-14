@@ -32,7 +32,8 @@ import { RequestingLocationService } from '../../services/requesting-location.se
 import { Country } from '../../models/country.model';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { signal, WritableSignal } from '@angular/core';
-
+import { HostListener } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
 export interface User {
   name: string;
@@ -231,15 +232,20 @@ today: Date = new Date();
   private countrySub?: Subscription;
   private citiesSub?: Subscription;
   private toursSub?: Subscription;
+  private routeSub?: Subscription;
+
+  showMobileFilters = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
+     @Inject(DOCUMENT) private document: Document,
     private route: ActivatedRoute,
     private router: Router,
     private backendUrlService: BackendUrlService,
     private tourntripCountryService: TourntripCountryService,
     private http: HttpClient,
-    private requestingLocationService: RequestingLocationService
+    private requestingLocationService: RequestingLocationService,
+   
   ) {
     this.requestingLocationService.country$.subscribe(country => {
       this.requestingLocationCountry = country;
@@ -247,7 +253,14 @@ today: Date = new Date();
     });
   }
 
+
+
   ngOnInit(): void {
+
+    
+
+    this.onResize(null); 
+
     this.loadAdventureStyles();
     this.pageCountry = this.tourntripCountryService.getCountry();
 
@@ -267,8 +280,227 @@ today: Date = new Date();
       }
     });
 
+    // NEW: Subscribe to queryParams changes for search filters
+    this.routeSub = this.route.queryParams.subscribe(params => {
+      this.applySearchFiltersFromParams(params);
+    });
+
     this.updateActiveFilterChips();
   }
+
+
+
+  public get innerWidth(): number {
+    return this.document.defaultView?.innerWidth || 0; // Fallback to 0 if undefined (e.g., server-side)
+  }
+
+  toggleMobileFilters() {
+    this.showMobileFilters = !this.showMobileFilters;
+  }
+
+
+@HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (window.innerWidth >= 992) {
+      this.showMobileFilters = false;
+    } else {
+      this.showMobileFilters = true; // Optional: Handle mobile case
+    }
+  }
+
+
+  // NEW: Apply filters from search bar query params
+  private applySearchFiltersFromParams(params: any): void {
+    
+    
+  
+
+
+
+console.log('Applying ALL filters from params:', params);
+
+  // Handle date
+  if (params['departure_date']) {
+    const dateStr = params['departure_date'];
+    this.selectedDepartureDate.setValue(new Date(dateStr));
+    this.onSpecificDateSelected(dateStr);
+  }
+
+  // Handle months (array)
+  if (params['month']) {
+    const monthNums = Array.isArray(params['month']) ? params['month'].map(Number) : [Number(params['month'])];
+    monthNums.forEach(monthNum => {
+      if (!this.selectedMonths().includes(monthNum)) {
+        this.selectedMonths.update(arr => [...arr, monthNum]);
+      }
+    });
+    this.syncMonthFilters();  // This clears date if months are set
+  }
+
+  // Handle adventure styles (array)
+  if (params['adventure_style']) {
+    const styleIds = Array.isArray(params['adventure_style']) ? params['adventure_style'].map(Number) : [Number(params['adventure_style'])];
+    styleIds.forEach((id: number) => {
+      const index = this.adventureStyles.findIndex(s => s.id === id);
+      if (index !== -1 && !this.adventureStylesForm.at(index).value) {
+        this.adventureStylesForm.at(index).setValue(true);
+        this.onAdventureStyleChange(index, { checked: true } as MatCheckboxChange);
+      }
+    });
+  }
+
+  // Handle price range
+  if (params['min_price'] || params['max_price']) {
+    this.minValue = Number(params['min_price']) || this.minPrice;
+    this.maxValue = Number(params['max_price']) || this.maxPrice;
+    this.globalFilters.min_price = this.minValue;
+    this.globalFilters.max_price = this.maxValue;
+    // Trigger slider update if needed (e.g., via @ViewChild or direct assignment)
+  }
+
+  // Handle start city
+  if (params['start_city']) {
+    const cityName = params['start_city'];
+    const city = this.destinationCities.find(c => c.name === cityName);
+    if (city) {
+      this.startCityControl.setValue(city);
+      this.selectedStartCity = city;
+      this.globalFilters.start_city = city.id;
+      this.addFilter(`start_city=${city.id}`);
+    }
+  }
+
+  // Handle end city
+  if (params['end_city']) {
+    const cityName = params['end_city'];
+    const city = this.destinationCities.find(c => c.name === cityName);
+    if (city) {
+      this.endCityControl.setValue(city);
+      this.selectedEndCity = city;
+      this.globalFilters.end_city = city.id;
+      this.addFilter(`end_city=${city.id}`);
+    }
+  }
+
+  // Handle search city
+  if (params['search_city']) {
+    const cityName = params['search_city'];
+    const city = this.destinationCities.find(c => c.name === cityName);
+    if (city) {
+      this.myControl.setValue(city);
+      this.selectedSearchCity = city;
+      this.globalFilters.search_city = cityName;
+      this.addFilter(`search_city=${cityName}`);
+    }
+  }
+
+  // Handle sorting
+  if (params['sort']) {
+    const sortValue = params['sort'];
+    if (this.sortingOptions.some(o => o.value === sortValue)) {
+      this.selectedSort = sortValue;
+    }
+  }
+
+  if (params['filter']) {  // ← Change from params['sort']
+  const sortValue = params['filter'];
+  if (this.sortingOptions.some(o => o.value === sortValue)) {
+    this.selectedSort = sortValue;
+  }
+}
+
+  // Reload tours after applying all
+  if (this.pageCountry) {
+    this.loadToursWithCurrentFilters(1);  // Reset to page 1
+  }
+
+
+
+  this.currentPage = Number(params['page']) || 1;
+
+  // Reload tours with the parsed page (or 1)
+  if (this.pageCountry) {
+    this.loadToursWithCurrentFilters(this.currentPage);
+  }
+
+
+  this.updateActiveFilterChips();
+
+
+
+
+
+
+
+
+  }
+
+
+  private updateUrlWithFilters(page? : number): void {
+  const queryParams: any = {};
+
+  // Date
+  if (this.globalFilters.departure_date) {
+    queryParams.departure_date = this.formatDate(this.globalFilters.departure_date);
+  }
+
+  // Months (array)
+  this.selectedMonths().forEach(monthNum => {
+    if (!queryParams.month) queryParams.month = [];
+    queryParams.month.push(monthNum);
+  });
+
+  // Adventure styles (array)
+  const selectedStyles = this.getSelectedAdventureStyles();
+  if (selectedStyles.length > 0) {
+    queryParams.adventure_style = selectedStyles;
+  }
+
+  // Price
+  if (this.globalFilters.min_price && this.globalFilters.min_price > this.minPrice) {
+    queryParams.min_price = this.globalFilters.min_price;
+  }
+  if (this.globalFilters.max_price && this.globalFilters.max_price < this.maxPrice) {
+    queryParams.max_price = this.globalFilters.max_price;
+  }
+
+  // Start/End cities
+  if (this.selectedStartCity) {
+    queryParams.start_city = this.selectedStartCity.name;
+  }
+  if (this.selectedEndCity) {
+    queryParams.end_city = this.selectedEndCity.name;
+  }
+
+  // Search city
+  if (this.selectedSearchCity) {
+    queryParams.search_city = this.selectedSearchCity.name;
+  }
+
+  // Sorting
+  if (this.selectedSort) {
+    queryParams.sort = this.selectedSort;  // Note: Using 'sort' key to match backend's 'filter'
+  }
+
+  if (page !== undefined) {
+    queryParams.page = page;
+  }
+
+
+  // Navigate with merge (preserves page/country if needed, but we reset page to 1 on filter change)
+this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams,
+    queryParamsHandling: '',  // ← Key change: Replaces entire query string
+    replaceUrl: true
+  }).then(() => {
+    this.loadToursWithCurrentFilters(page ?? 1);  // Use provided page or 1
+  });
+}
+
+
+  
+
 
   private handleCountryRouting(): void {
     const countryFromUrl = this.route.snapshot.paramMap.get('country');
@@ -385,6 +617,7 @@ today: Date = new Date();
     this.addFilter(`start_city=${city.id}`);
     this.reloadTours();
     this.updateActiveFilterChips();
+    this.updateUrlWithFilters();
   }
 
   onEndCitySelected(event: MatAutocompleteSelectedEvent): void {
@@ -397,6 +630,7 @@ today: Date = new Date();
     this.addFilter(`end_city=${city.id}`);
     this.reloadTours();
     this.updateActiveFilterChips();
+    this.updateUrlWithFilters();
   }
 
   onCitySelected(event: MatAutocompleteSelectedEvent): void {
@@ -409,6 +643,7 @@ today: Date = new Date();
     this.addFilter(`search_city=${city.name}`);
     this.reloadTours();
     this.updateActiveFilterChips();
+    this.updateUrlWithFilters();
   }
 
   private getAdventureStyles(): Observable<AdventureStyle[]> {
@@ -456,6 +691,7 @@ today: Date = new Date();
       this.removeFilter(`adventure_style=${styleId}`);
     }
     this.reloadTours();
+    this.updateUrlWithFilters();
     this.updateActiveFilterChips();
   }
 
@@ -509,6 +745,15 @@ private loadToursWithCurrentFilters(page: number = 1): void {
   const params: any = {};
   const baseUrl = `${this.backendUrlService.getTournTripUrl()}countries/${this.pageCountry.id}/tours/`;
   const url = new URL(baseUrl);
+
+  const validPage = Math.max(1, Math.min(page, this.totalPages || 1));
+  if (validPage !== page) {
+    this.currentPage = validPage;
+    this.updateUrlWithFilters(validPage);  // Sync URL
+    return;
+  }
+
+  this.currentPage = page;
 
   // === Rebuild ALL current filters ===
   if (this.minValue > this.minPrice) params.min_price = this.minValue;
@@ -569,15 +814,17 @@ private loadToursWithCurrentFilters(page: number = 1): void {
 
 
 
-  goToPreviousPage(): void {
+goToPreviousPage(): void {
   if (this.currentPage > 1) {
-    this.loadToursWithCurrentFilters(this.currentPage - 1);
+    const newPage = this.currentPage - 1;
+    this.updateUrlWithFilters(newPage);  // ← Updates URL and loads
   }
 }
 
 goToNextPage(): void {
   if (this.currentPage < this.totalPages) {
-    this.loadToursWithCurrentFilters(this.currentPage + 1);
+    const newPage = this.currentPage + 1;
+    this.updateUrlWithFilters(newPage);  // ← Updates URL and loads
   }
 }
 
@@ -589,19 +836,12 @@ goToNextPage(): void {
   onRangeChange(value: number, type: 'min' | 'max'): void {
     this.globalFilters.min_price = this.minValue;
     this.globalFilters.max_price = this.maxValue;
+    this.updateUrlWithFilters();
     this.updateActiveFilterChips();
   }
 
   onSortChange(): void {
-    // if (!this.selectedSort) {
-    //   this.router.navigate([], { queryParams: {}, queryParamsHandling: 'merge' });
-    //   return;
-    // }
-    // const [key, value] = this.selectedSort.split('=');
-    // const queryParams: any = { [key]: value };
-    // this.router.navigate([], { queryParams, queryParamsHandling: 'merge' });
-
-
+    this.updateUrlWithFilters();
     this.reloadTours();
   }
 
@@ -624,6 +864,7 @@ goToNextPage(): void {
     currentSelected.forEach(month => this.addFilter(`month=${month}`));
     this.globalFilters.month = [...currentSelected];
     this.reloadTours();
+    this.updateUrlWithFilters();
     this.updateActiveFilterChips();
   }
 
@@ -651,12 +892,14 @@ goToNextPage(): void {
     this.addFilter(`departure_date=${dateStr}`);
     this.globalFilters.month = [];
     this.globalFilters.departure_date = new Date(dateStr);
+    this.updateUrlWithFilters();
     this.updateActiveFilterChips();
   }
 
   private onSpecificDateCleared(): void {
     this.globalFilterArray.update(arr => arr.filter(f => !f.startsWith('departure_date=')));
     this.globalFilters.departure_date = undefined;
+    this.updateUrlWithFilters();
     this.updateActiveFilterChips();
   }
 
@@ -719,6 +962,11 @@ goToNextPage(): void {
     }
   }
 
+  // At the end of updateActiveFilterChips():
+if (this.currentPage > 1) {
+  chips.push({ key: `page=${this.currentPage}`, label: `Page: ${this.currentPage}` });
+}
+
     this.activeFilters.set(chips);
     this.activeFilterCount.set(chips.length);
   }
@@ -739,19 +987,16 @@ goToNextPage(): void {
       this.startCityControl.setValue('');
       this.globalFilters.start_city = undefined;
       this.removeFilter(key);
-      this.reloadTours();
     } else if (type === 'end_city') {
       this.selectedEndCity = null;
       this.endCityControl.setValue('');
       this.globalFilters.end_city = undefined;
       this.removeFilter(key);
-      this.reloadTours();
     } else if (type === 'price') {
       this.minValue = this.minPrice;
       this.maxValue = this.maxPrice;
       this.globalFilters.min_price = undefined;
       this.globalFilters.max_price = undefined;
-      this.reloadTours();
     } else if (type === 'adventure_style') {
       const styleId = +value;
       const index = this.adventureStyles.findIndex(s => s.id === styleId);
@@ -764,7 +1009,6 @@ goToNextPage(): void {
       this.myControl.setValue('');
       this.globalFilters.search_city = undefined;
       this.removeFilter(key);
-      this.reloadTours();
     }
     // ----- NEW: SORT -----
   else if (type === 'sort') {
@@ -773,6 +1017,7 @@ goToNextPage(): void {
   }
 
     this.updateActiveFilterChips();
+    this.updateUrlWithFilters();
   }
 
   clearAllFilters(): void {
@@ -803,7 +1048,10 @@ goToNextPage(): void {
 
     this.globalFilterArray.set([]);
     this.reloadTours();
-    this.updateActiveFilterChips();
+// ... (keep existing resets)
+this.router.navigate([], { relativeTo: this.route, queryParams: { page: 1 }, replaceUrl: true });  // Force page=1
+this.loadToursWithCurrentFilters(1);
+this.updateActiveFilterChips();
   }
 
   onFilterMenuClosed(): void {}

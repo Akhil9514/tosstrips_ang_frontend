@@ -13,9 +13,9 @@ body {
 :root {
   --navy:      #003366;   /* logo left side */
   --red:       #CC0000;   /* logo right side */
-  --teal:      #00A8A8;   /* logo swirl & accent */
+  --teal:      #003366;   /* logo swirl & accent */
   --light-bg:  #F8F9FA;
-  --hover-bg:  rgba(0, 166, 166, 0.15);
+  --hover-bg:  rgba(116, 149, 249, 0.15);
   --hover-red: rgba(204, 0, 0, 0.15);
 }
 
@@ -25,7 +25,7 @@ body {
   /* ---- ACTIVE label ---- */
 .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label  {
     color: #000922 !important;
-    font-size: 20px !important;
+    font-size: 18px !important;
     font-weight: 600 !important;
     background-color: transparent !important;
     /* border-bottom: 5px solid #ff2626 !important; */
@@ -39,7 +39,7 @@ body {
   /* ---- INACTIVE label ---- */
 .mat-mdc-tab .mdc-tab__text-label {
     color: #000922 !important;
-    font-size: 20px !important;
+    font-size: 16px !important;
     font-weight: 400 !important;
     border-radius: 0 !important;
     min-width: auto !important;
@@ -56,6 +56,27 @@ body {
 
 
 
+swiper-container {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+}
+
+
+
+swiper-slide{
+    cursor:grab;
+    justify-content: center;
+}
+
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;  /* Optional: Add breathing room */
+}
 
 
 
@@ -125,6 +146,7 @@ h6,
   }
 .whereto-go ul li{
   display: inline-flex;
+  align-items: center;
   list-style-type: none;
  
 }
@@ -2120,6 +2142,7 @@ footer img{
     margin-right: 15px;
     margin-top: -15px;
 }
+/* 
 .every-taste{
     float: left;
     margin-top: 40px;
@@ -2158,7 +2181,7 @@ footer img{
     text-align: left;
     display: inline-block;
     width: 81%;
-}
+} */
 .considering{
    background: url(assets/images/advencheer-banner-2.png) no-repeat;
    width: 100%;
@@ -4829,6 +4852,7 @@ footer img{
     border-radius: 13px;
     border: 1px solid #000;
 }
+/* 
 .every-taste.add{
     float: left;
     margin-top: 40px;
@@ -4869,7 +4893,7 @@ footer img{
     text-align: left;
     display: inline-block;
     width: 81%;
-}
+} */
 .let-us{
     float: left; 
     width:100%; 
@@ -6109,6 +6133,7 @@ footer {
     font-weight: 500;
 }
 .popular-destinations .advan-all .padu1 .navrgt h3{font-size:14px;}
+/* 
 .every-taste h2{font-size:16px;}
 .every-taste p{
     font-size: 13px;
@@ -6137,7 +6162,7 @@ footer {
 }
 .every-taste img {
     margin-bottom: 20px;
-}
+} */
 .considering h2 {
     color: #fff;
     font-size: 16px;
@@ -7213,6 +7238,7 @@ footer .foot-main .foot-left ul{justify-content: space-evenly;}
     font-size: 17px;
 }
 .let-us button{margin-bottom:20px;}
+/* 
 .every-taste.add h2 {
     font-size: 18px;
     margin-bottom: 14px;
@@ -7228,7 +7254,7 @@ footer .foot-main .foot-left ul{justify-content: space-evenly;}
 }
 .every-taste.add {
     margin-top: 20px;
-}
+} */
 .let-us button {
     font-size: 13px;
     margin-top: 0;

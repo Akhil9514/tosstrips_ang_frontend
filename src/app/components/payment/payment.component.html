@@ -309,7 +309,6 @@
 
                   <!-- Material form field with readonly input as menu trigger -->
                   <mat-form-field class="w-100">
-                    <mat-label>Click to adjust travelers</mat-label>
                     <!-- Keep Bootstrap class if needed for styling -->
                     <input
                       matInput
@@ -319,8 +318,9 @@
                       readonly
                       [value]="getTravelersDisplay()"
                     />
-                    <!-- Optional: Add a suffix icon to indicate it's interactive -->
+                    <!-- Optional: Add a suffix icon to indicate it's interactive 
                     <mat-icon matSuffix [matMenuTriggerFor]="quantityMenu" class="cursor-pointer">edit</mat-icon>
+                  -->
                   </mat-form-field>
                 </div>
 
@@ -364,19 +364,16 @@
                   >
                 </div>
               </div>
-              <div class="nameplace-1">
-                <div class="custom-control custom-checkbox">
-                  <input
-                    class="custom-control-input"
-                    type="checkbox"
-                    id="directFlight"
-                    formControlName="directFlight"
-                  />
-                  <label class="custom-control-label" for="directFlight"
-                    >Direct Flight</label
-                  >
-                </div>
-              </div>
+
+<div class="nameplace-1 d-flex align-items-center">
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" id="directFlight" formControlName="directFlight">
+    <label class="form-check-label" for="directFlight">
+      Direct Flight
+    </label>
+  </div>
+</div>
+
             </div>
 
             <div

@@ -1,0 +1,110 @@
+/* Floating Label Styles */
+.form-item {
+  position: relative;
+  margin-bottom: 2rem; /* Increased for textarea */
+}
+
+.form-item input,
+.form-item textarea {
+  width: 100%;
+  padding: 1rem 0.75rem 0.5rem 0.75rem; /* Space for floating label */
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  background: transparent;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.form-item input:focus,
+.form-item textarea:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-item input::placeholder,
+.form-item textarea::placeholder {
+  color: transparent; /* Hide placeholder when label is floating */
+}
+
+.form-item label {
+  position: absolute;
+  top: 1rem;
+  left: 0.75rem;
+  color: #6c757d;
+  font-size: 1rem;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: white;
+  padding: 0 0.25rem;
+  z-index: 1;
+}
+
+/* Float label up when focused, valid, or has value */
+.form-item input:focus ~ label,
+.form-item input:valid ~ label,
+.form-item input:not(:placeholder-shown) ~ label,
+.form-item textarea:focus ~ label,
+.form-item textarea:valid ~ label,
+.form-item textarea:not(:placeholder-shown) ~ label {
+  top: 0.25rem;
+  font-size: 0.875rem;
+  color: #495057;
+}
+
+/* Error state for input/textarea */
+.error {
+  border-color: #dc3545 !important;
+}
+
+.error ~ label {
+  color: #dc3545;
+}
+
+/* Error messages */
+.error-message {
+  color: #dc3545;
+  font-size: 0.875em;
+  margin-top: 0.25rem;
+}
+
+/* Success message */
+.success-message {
+  color: #28a745;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  margin-top: 1rem;
+}
+
+/* Submit button - Full width */
+.form-button {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.form-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.form-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #6c757d;
+}
+
+/* Textarea specific adjustments */
+.form-item textarea {
+  resize: vertical;
+  min-height: 120px;
+  padding-top: 1rem;
+}

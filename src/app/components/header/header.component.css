@@ -5,7 +5,7 @@
   margin-top: 0;
   border-radius: 0;
   background-color: #fff;
-  height: 130px;
+  height: 130px;                 /* Desktop */
   padding: 1px;
   display: flex;
   align-items: center;
@@ -23,7 +23,60 @@
   transition: transform 0.3s ease;
   filter: drop-shadow(1px 1px 3px rgba(0,0,0,.15));
 }
-.logo:hover { transform: scale(1.1); }
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+
+/* -------------------------------
+   Tablet (≤ 1024px)
+-------------------------------- */
+@media (max-width: 1024px) {
+  .navbar {
+    height: 110px;      /* Matches tablet logo size */
+  }
+
+  .logo {
+    height: 110px;
+    width: 110px;
+    margin-right: 8px;
+  }
+}
+
+
+/* -------------------------------
+   Mobile (≤ 767px)
+-------------------------------- */
+@media (max-width: 767px) {
+  .navbar {
+    height: 80px;      /* Matches mobile logo size */
+  }
+
+  .logo {
+    height: 80px;
+    width: 80px;
+    margin-right: 6px;
+  }
+}
+
+
+/* -------------------------------
+   Small Mobile (≤ 480px)
+-------------------------------- */
+@media (max-width: 480px) {
+  .navbar {
+    height: 60px;      /* Matches very small screens */
+  }
+
+  .logo {
+    height: 60px;
+    width: 60px;
+    margin-right: 5px;
+  }
+}
+
+
 
 /* Company Text */
 .edc-text span {
@@ -249,7 +302,8 @@
 
 .navbar .mega-menu {
   width: 100%;
-  max-width: 1300px;
+  max-width: 1500px;
+  max-height: 1000px;
   margin: 0 auto;
   padding: 1.5rem 2rem;
   background: #fff;
@@ -261,9 +315,9 @@
 /* Destinations Grid */
 .navbar .mega-menu.destinations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 2rem 1.5rem;
-  font-size: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  font-size: 14px;
 }
 .navbar .continent-col {
   display: flex;
@@ -300,15 +354,28 @@
   padding: 1.5rem 2rem;
 }
 
+.country-list li {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  list-style: none; /* optional: removes bullet */
+}
+
+.country-list {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+
+
 /* Dropdown Items (Shared) */
 .navbar .dropdown-item,
 .sidebar-panel .dropdown-item,
 .country-list .dropdown-item {
-  color: var(--navy);
+  /* color: var(--navy); */
   padding: 0.5rem 1rem;
-  font-size: 1rem;
+  font-size: 14px;
   border-radius: .25rem;
-  transition: background 0.2s ease;
+  transition: transform 0.2s ease;
   display: block;
   text-align: left !important;
   width: 100%;
@@ -321,8 +388,9 @@
 .navbar .dropdown-item:hover,
 .sidebar-panel .dropdown-item:hover,
 .country-list .dropdown-item:hover {
-  background: var(--hover-bg);
+  background: none;
   color: var(--teal);
+  transform: scale(1.1);
 }
 
 /* LEFT ALIGN: Continent & Country Names (ALL) */
@@ -403,7 +471,7 @@
   text-align: center;
   font-weight: 700;
   font-size: 1.2rem;
-  color: var(--navy);
+  /* color: var(--navy); */
   margin-right: 2rem;
 }
 
@@ -495,7 +563,7 @@
    ================================================ */
 @media (max-width: 576px) {
   .edc-text span { font-size: 1rem; }
-  .sidebar { width: 200px; left: -210px; }
+  .sidebar { width: 280px; left: -280px; }
   .sidebar-links a,
   .sidebar-links .login-logout a,
   .sidebar-footer a { font-size: 0.9rem; }

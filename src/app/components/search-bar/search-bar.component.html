@@ -1,22 +1,101 @@
-    <section>
-        <div class="container">
-         <div class="row">
-           <div class="col-lg-12">
-             <div class="whereto-go">
-              <div class="when">
-                <ul>
-                <li><img src="assets/images/icon-1.png"> <input placeholder="Where To"></li>
-                  <li class="gray">|</li>
-                  <li><img src="assets/images/icon-2.png"> <input placeholder="When?"> </li>
-                  <li class="gray">|</li>
-                  <li><img src="assets/images/icon-3.png"> <input placeholder="All Adventures"></li>
-              </ul>
-              </div>
-              <div class="when-btn">
-                <a href="#"><i class="bi bi-angle-right"></i></a>
-              </div>
-             </div>
-           </div>    
-        </div>    
-        </div>    
-    </section>
+<!-- Updated search-bar.component.html - Add (click) to button -->
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="whereto-go">
+          <div class="when">
+            <ul>
+              <li class="relative-container"> <!-- Fixed: Add back relative-container for positioning -->
+                <img src="assets/images/icon-1.png"> 
+                <input 
+                  [formControl]="whereSearch"
+                  [matAutocomplete]="countryAuto"
+                  (focus)="onWhereFocus()"
+                  (blur)="onDropdownBlur()" 
+                  placeholder="Where To"
+                  autocomplete="off">
+                <!-- Prevents browser autocomplete interference -->
+                
+                <!-- Material Autocomplete Panel for Countries -->
+                <mat-autocomplete #countryAuto="matAutocomplete" [displayWith]="countryDisplayFn" (optionSelected)="onCountrySelected($event)">
+                  <mat-option 
+                    *ngFor="let country of filteredCountries | async; trackBy: trackByCountryId" 
+                    [value]="country"
+                    class="custom-mat-option"
+                  >
+                    <span class="option-name">{{ country.name }}</span>
+                  </mat-option>
+                  <!--
+                  <mat-option *ngIf="loadingCountries" class="loading-indicator" disabled>Loading countries...</mat-option>
+                  -->
+                  <mat-option *ngIf="(filteredCountries | async)?.length === 0 && isStringAndNonEmpty(whereSearch.value) && !loadingCountries" class="no-results" disabled>
+                    No countries found matching "{{ countryGetDisplayValue(whereSearch.value) }}"
+                  </mat-option>
+                </mat-autocomplete>
+              </li>
+              <li class="gray">|</li>
+              <li>
+                <img src="assets/images/icon-2.png"> 
+                <input 
+                  [formControl]="whenDate"
+                  [matDatepicker]="datePicker"
+                  [min]="minDate"
+                  (dateInput)="onDateSelected($event)"
+                  (click)="datePicker.open()"
+                  (focus)="onDateFocus()"
+                  (blur)="onDropdownBlur()" 
+                  placeholder="When?"
+                  autocomplete="off"
+                  class="date-input">
+                <!-- Prevents browser autocomplete interference -->
+                
+                <!-- Material Datepicker Panel -->
+                <mat-datepicker #datePicker></mat-datepicker>
+              </li>
+              <li class="gray">|</li>
+              <li class="relative-container">
+                <img src="assets/images/icon-3.png"> 
+                <input 
+                  [formControl]="adventureSearch"
+                  [matAutocomplete]="auto"
+                  (focus)="onAdventureFocus()"
+                  (blur)="onDropdownBlur()" 
+                  placeholder="All Adventures"
+                  autocomplete="off">
+                <!-- Prevents browser autocomplete interference -->
+                
+                <!-- Material Autocomplete Panel -->
+                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event)">
+                  <mat-option 
+                    *ngFor="let style of filteredAdventureStyles | async; trackBy: trackByStyleId" 
+                    [value]="style"
+                    class="custom-mat-option"
+                  >
+                    <span class="option-name">{{ style.name }}</span>
+                    <small *ngIf="style.description" class="option-description">{{ style.description }}</small>
+                  </mat-option>
+                  <mat-option *ngIf="loadingAdventureStyles" class="loading-indicator" disabled>Loading adventures...</mat-option>
+                  <mat-option *ngIf="(filteredAdventureStyles | async)?.length === 0 && isStringAndNonEmpty(adventureSearch.value) && !loadingAdventureStyles" class="no-results" disabled>
+                    No adventures found matching "{{ getDisplayValue(adventureSearch.value) }}"
+                  </mat-option>
+                </mat-autocomplete>
+              </li>
+            </ul>
+          </div>
+          <div class="when-btn">
+            <button
+              mat-fab
+              color="primary"
+              class="shadow-sm"
+              title="Apply filters"
+              (click)="applyFilters()"
+            >
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>    
+    </div>    
+  </div>    
+</section>

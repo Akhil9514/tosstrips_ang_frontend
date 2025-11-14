@@ -1,33 +1,31 @@
-<p>contact-us works!</p>
+
 <section class="support-team">
     <div class="container">
         <div class="row">
             <div class="col-lg-4 space-mob">
                 <div class="during">
                   <div class="flt-nav1">
-                     <img src="assets/images/contct-us-icon-1.png" />
+                     <img src="assets/images/contct-us-icon-1.png" alt="Phone Icon">
                   </div>
                   <div class="flt-nav2">
-                      <p><strong>Phone</strong>  +1(516) 636-2855</p>
+                      <p><strong>Phone</strong> +1(516) 636-2855</p>
                   </div>
-                  
                 </div>
             </div>
             <div class="col-lg-4 space-mob">
                 <div class="during">
                     <div class="flt-nav1">
-                     <img src="assets/images/contct-us-icon-2.png" />
+                     <img src="assets/images/contct-us-icon-2.png" alt="Email Icon">
                   </div>
                    <div class="flt-nav2">
-                      <p><strong>Email to us</strong>  bookings&#64;tossntrips.com</p>
+                      <p><strong>Email to us</strong> bookings&#64;tossntrips.com</p>
                   </div>
-                   
                 </div>
             </div>
             <div class="col-lg-4 space-mob">
                 <div class="during">
                     <div class="flt-nav1">
-                     <img src="assets/images/contct-us-icon-3.png" />
+                     <img src="assets/images/contct-us-icon-3.png" alt="Address Icon">
                   </div>
                    <div class="flt-nav2">
                       <p>
@@ -35,7 +33,6 @@
                        Boca Raton, FL, 33487
                       </p>
                   </div>
-                   
                 </div>
             </div>
         </div>
@@ -49,35 +46,92 @@
                     <div id="contact">
                         <div class="contact-box">
                            <h2>Get in touch</h2>
-                            <form class="contact-form" method="POST" action="https://parking.adamvacations.com/Home/RequestCallback" id="contactForm">
+                            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" novalidate>
+                                <!-- Full Name -->
                                 <div class="form-item">
-                                    <label for="contact-name">Full Name</label>
-                                    <input id="contact-name" name="name" type="text" required>
+                                    <input 
+                                      id="fullName" 
+                                      formControlName="fullName" 
+                                      type="text" 
+                                      placeholder="Enter your full name"
+                                      [class.error]="f['fullName'].invalid && (f['fullName'].touched || isSubmitted)">
+                                    <label for="fullName">Full Name</label>
+                                    <div *ngIf="f['fullName'].invalid && (f['fullName'].touched || isSubmitted)" class="error-message">
+                                      <span *ngIf="f['fullName'].errors?.['required']">Full Name is required.</span>
+                                      <span *ngIf="f['fullName'].errors?.['minlength']">Full Name must be at least 2 characters.</span>
+                                      <span *ngIf="f['fullName'].errors?.['maxlength']">Full Name must not exceed 100 characters.</span>
+                                    </div>
                                 </div>
+                                
+                                <!-- Email -->
                                 <div class="form-item">
-                                    <label for="contact-email">E-Mail</label>
-                                    <input id="contact-email" name="email" type="email" required>
+                                    <input 
+                                      id="email" 
+                                      formControlName="email" 
+                                      type="email" 
+                                      placeholder="Enter your email address"
+                                      [class.error]="f['email'].invalid && (f['email'].touched || isSubmitted)">
+                                    <label for="email">E-Mail</label>
+                                    <div *ngIf="f['email'].invalid && (f['email'].touched || isSubmitted)" class="error-message">
+                                      <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+                                      <span *ngIf="f['email'].errors?.['email']">Please enter a valid email.</span>
+                                    </div>
                                 </div>
+                                
+                                <!-- Subject -->
                                 <div class="form-item">
-                                    <label for="contact-subject">Subject</label>
-                                    <input id="contact-subject" name="subject" type="text" required>
+                                    <input 
+                                      id="subject" 
+                                      formControlName="subject" 
+                                      type="text" 
+                                      placeholder="Enter the subject (min 3 chars)"
+                                      [class.error]="f['subject'].invalid && (f['subject'].touched || isSubmitted)">
+                                    <label for="subject">Subject</label>
+                                    <div *ngIf="f['subject'].invalid && (f['subject'].touched || isSubmitted)" class="error-message">
+                                      <span *ngIf="f['subject'].errors?.['required']">Subject is required.</span>
+                                      <span *ngIf="f['subject'].errors?.['minlength']">Subject must be at least 3 characters.</span>
+                                      <span *ngIf="f['subject'].errors?.['maxlength']">Subject must not exceed 200 characters.</span>
+                                    </div>
                                 </div>
+                                
+                                <!-- Message -->
                                 <div class="form-item">
-                                    <label for="contact-message">Message</label>
-                                    <textarea id="contact-message" name="message" rows="4" required></textarea>
+                                    <textarea 
+                                      id="message" 
+                                      formControlName="message" 
+                                      rows="4" 
+                                      placeholder="Enter your message (min 10 chars)"
+                                      [class.error]="f['message'].invalid && (f['message'].touched || isSubmitted)"></textarea>
+                                    <label for="message">Message</label>
+                                    <div *ngIf="f['message'].invalid && (f['message'].touched || isSubmitted)" class="error-message">
+                                      <span *ngIf="f['message'].errors?.['required']">Message is required.</span>
+                                      <span *ngIf="f['message'].errors?.['minlength']">Message must be at least 10 characters.</span>
+                                    </div>
                                 </div>
-                                <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
-                                <button class="form-button" type="submit">Submit</button>
+                                
+                                <!-- Submit Button -->
+                                <button 
+                                  class="form-button" 
+                                  type="submit" 
+                                  [disabled]="isLoading || contactForm.invalid">
+                                  <span *ngIf="isLoading">Sending...</span>
+                                  <span *ngIf="!isLoading">Submit</span>
+                                </button>
+                                
+                                <!-- Messages -->
+                                <div *ngIf="successMessage" class="success-message">{{ successMessage }}</div>
+                                <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
                             </form>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 text-right">
-                  <img src="assets/images/contact-banner-2.png" class="img-fluid">
+                  <img src="assets/images/contact-banner-2.png" class="img-fluid" alt="Contact Banner">
                 </div>
         </div>
     </div>
 </section>
+
 <section class="map">
   <div class="container">
       <div class="row">
