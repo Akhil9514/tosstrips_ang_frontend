@@ -259,7 +259,7 @@ today: Date = new Date();
 
     
 
-    this.onResize(null); 
+    // this.onResize(null); 
 
     this.loadAdventureStyles();
     this.pageCountry = this.tourntripCountryService.getCountry();
@@ -290,23 +290,23 @@ today: Date = new Date();
 
 
 
-  public get innerWidth(): number {
-    return this.document.defaultView?.innerWidth || 0; // Fallback to 0 if undefined (e.g., server-side)
-  }
+//   public get innerWidth(): number {
+//     return this.document.defaultView?.innerWidth || 0; // Fallback to 0 if undefined (e.g., server-side)
+//   }
 
-  toggleMobileFilters() {
-    this.showMobileFilters = !this.showMobileFilters;
-  }
+//   toggleMobileFilters() {
+//     this.showMobileFilters = !this.showMobileFilters;
+//   }
 
 
-@HostListener('window:resize', ['$event'])
-  onResize(event: any) {
-    if (window.innerWidth >= 992) {
-      this.showMobileFilters = false;
-    } else {
-      this.showMobileFilters = true; // Optional: Handle mobile case
-    }
-  }
+// @HostListener('window:resize', ['$event'])
+//   onResize(event: any) {
+//     if (window.innerWidth >= 992) {
+//       this.showMobileFilters = false;
+//     } else {
+//       this.showMobileFilters = true; // Optional: Handle mobile case
+//     }
+//   }
 
 
   // NEW: Apply filters from search bar query params
