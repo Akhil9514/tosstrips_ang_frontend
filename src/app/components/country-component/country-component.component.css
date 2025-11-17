@@ -122,6 +122,86 @@
 
 
 
+
+
+
+
+
+
+/* --------------------------------------------------------------
+   APPLIED FILTERS – 2D SCROLL: HORIZONTAL + VERTICAL (FIXED)
+   -------------------------------------------------------------- */
+.mat-select-panel {
+  overflow: hidden !important;
+  max-height: 300px !important;
+}
+
+/* 1. Wrapper – vertical scroll */
+.applied-filters-wrapper {
+  display: block;
+  padding: 8px 0;
+  max-height: 256px;               /* leaves room for "Clear all" */
+  overflow-y: auto;                /* VERTICAL SCROLL */
+  overflow-x: hidden;
+}
+
+/* 2. Inner container – allow wrap, but each line scrolls horizontally */
+.applied-filters-scroll-container {
+  display: flex;
+  flex-wrap: wrap;                 /* WRAP TO NEW LINES */
+  gap: 8px;
+  padding: 0 8px;
+  overflow-x: auto;                /* HORIZONTAL SCROLL PER LINE */
+  overflow-y: hidden;
+  min-width: 100%;
+  scroll-behavior: smooth;
+}
+
+/* 3. Each chip – same as before */
+.applied-filter-chip {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  background: #e3f2fd;
+  border-radius: 20px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1976d2;
+  flex-shrink: 0;
+  min-width: 0;
+  height: 36px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.applied-filter-chip .small-x-btn {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  color: #d32f2f;
+}
+
+.applied-filter-chip .filter-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+
+
+.applied-filters-scroll-container { flex-wrap: wrap; }   /* ← THIS LINE FIXES VERTICAL SCROLL */
+
+
+.clear-sort-option {
+  color: #d32f2f !important;   /* same red as Clear all filters */
+  font-weight: 500;
+}
+
 .filter-section {
   width: 100%;  /* Ensure full width to prevent horizontal shifts */
   position: relative;  /* Contain any transforms or overflows */

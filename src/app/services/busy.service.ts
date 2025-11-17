@@ -8,7 +8,7 @@ export class BusyService {
   private busyRequestCount = 0;
   private spinnerShownAt: number | null = null;
   private hideTimeoutId: ReturnType<typeof setTimeout> | null = null;
-  private readonly minDisplayMs = 3000; // minimum spinner display time in ms
+  private readonly minDisplayMs = 1000; // minimum spinner display time in ms
 
   constructor(private spinnerService: NgxSpinnerService) {}
 

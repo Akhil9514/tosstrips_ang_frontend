@@ -65,7 +65,7 @@
                   autocomplete="off">
                 <!-- Prevents browser autocomplete interference -->
                 
-                <!-- Material Autocomplete Panel -->
+                <!-- Material Autocomplete Panel
                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event)">
                   <mat-option 
                     *ngFor="let style of filteredAdventureStyles | async; trackBy: trackByStyleId" 
@@ -80,6 +80,30 @@
                     No adventures found matching "{{ getDisplayValue(adventureSearch.value) }}"
                   </mat-option>
                 </mat-autocomplete>
+                 -->
+
+
+
+
+
+                <!-- In adventures mat-autocomplete -->
+<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onOptionSelected($event)">
+  <!-- NEW: Move loading here (always shows if loading, even with []) -->
+  <mat-option *ngIf="loadingAdventureStyles" class="loading-indicator" disabled>Loading adventures...</mat-option>
+  
+  <mat-option 
+    *ngFor="let style of filteredAdventureStyles | async; trackBy: trackByStyleId" 
+    [value]="style"
+    class="custom-mat-option"
+  >
+    <span class="option-name">{{ style.name }}</span>
+    <small *ngIf="style.description" class="option-description">{{ style.description }}</small>
+  </mat-option>
+  
+  <mat-option *ngIf="(filteredAdventureStyles | async)?.length === 0 && isStringAndNonEmpty(adventureSearch.value) && !loadingAdventureStyles" class="no-results" disabled>
+    No adventures found matching "{{ getDisplayValue(adventureSearch.value) }}"
+  </mat-option>
+</mat-autocomplete>
               </li>
             </ul>
           </div>

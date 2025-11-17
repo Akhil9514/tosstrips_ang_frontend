@@ -1,0 +1,174 @@
+<!-- SECTION 2: Filters & Sort -->
+<section class="most-poplar py-3">
+  <div class="container">
+    <div class="row g-3 justify-content-center align-items-stretch price">
+      <!-- ==== SORT ==== -->
+      <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
+        <div class="h-100 d-flex flex-column justify-content-center">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Sort by</mat-label>
+
+            <mat-select
+              [(value)]="selectedSort"
+              (selectionChange)="onSortChange()"
+            >
+              <mat-option
+                *ngFor="let option of sortingOptions"
+                [value]="option.value"
+              >
+                {{ option.label }}
+              </mat-option>
+
+              <mat-option [value]="''" class="clear-sort-option">
+                Clear sort
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ==== PRICE SLIDER ==== -->
+      <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
+        <div
+          class="h-100 d-flex flex-column justify-content-center text-center"
+        >
+          <div class="price-label mb-1">Price</div>
+          <div class="price-value mb-2">
+            {{ selectedCurrency.symbol }}{{ minValue | number }} -
+            {{ selectedCurrency.symbol }}{{ maxValue | number }}
+          </div>
+          <mat-slider
+            [min]="minPrice"
+            [max]="maxPrice"
+            class="price-slider mx-auto slider-90"
+          >
+            <input
+              [(ngModel)]="minValue"
+              matSliderStartThumb
+              (valueChange)="onRangeChange($event, 'min')"
+            />
+            <input
+              [(ngModel)]="maxValue"
+              matSliderEndThumb
+              (valueChange)="onRangeChange($event, 'max')"
+            />
+          </mat-slider>
+        </div>
+      </div>
+
+      <!-- ==== CITY SEARCH ==== -->
+      <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
+        <div class="h-100 d-flex flex-column justify-content-center">
+          <form class="">
+            <mat-form-field class="w-100">
+              <mat-label>Search destination</mat-label>
+              <input
+                type="text"
+                matInput
+                [formControl]="myControl"
+                [matAutocomplete]="auto"
+                placeholder="Type to search..."
+              />
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                [displayWith]="displayFn"
+                (optionSelected)="onCitySelected($event)"
+              >
+                @for (option of filteredOptions$ | async; track option.id) {
+                <mat-option [value]="option">{{ option.name }}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </form>
+        </div>
+      </div>
+
+      <!-- ==== APPLIED FILTERS ==== -->
+      <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
+        <div class="h-100 d-flex flex-column justify-content-center">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>
+              <img src="assets/images/sort.png" alt="sort" class="me-1" />
+              Applied filters
+              <span
+                *ngIf="activeFilterCount() > 0"
+                class="badge material-primary-badge ms-1"
+              >
+                {{ activeFilterCount() }}
+              </span>
+            </mat-label>
+
+            <mat-select [value]="null" (closed)="onFilterMenuClosed()">
+              <!-- No filters -->
+              <mat-option
+                *ngIf="activeFilters().length === 0"
+                disabled
+                class="text-muted"
+              >
+                No filters applied
+              </mat-option>
+
+              <!-- 2D SCROLL AREA -->
+              <div
+                class="applied-filters-wrapper"
+                *ngIf="activeFilters().length > 0"
+              >
+                <div class="applied-filters-scroll-container">
+                  <div
+                    *ngFor="let filter of activeFilters()"
+                    class="applied-filter-chip"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <!-- X BUTTON FIRST -->
+                    <button
+                      mat-icon-button
+                      class="small-x-btn"
+                      (click)="
+                        removeFilterByKey(filter.key, $event);
+                        $event.stopPropagation()
+                      "
+                      title="Remove"
+                    >
+                      <mat-icon class="icon-x" fontIcon="clear"></mat-icon>
+                    </button>
+
+                    <!-- TRUNCATED LABEL -->
+                    <span class="filter-label">
+                      {{ filter.label }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Clear all – sticky at bottom -->
+              <mat-option
+                *ngIf="activeFilterCount() > 0"
+                class="text-danger clear-all-option"
+                (click)="clearAllFilters(); $event.stopPropagation()"
+              >
+                Clear all filters
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ==== APPLY BUTTON ==== -->
+      <div
+        class="col-12 col-md-6 col-lg d-flex justify-content-center align-items-center border-lg-0 border-dark"
+      >
+        <button
+          mat-fab
+          color="primary"
+          class="shadow-sm"
+          (click)="applyFilters()"
+          title="Apply filters"
+          [disabled]="loadingTours"
+        >
+          <mat-icon *ngIf="!loadingTours">arrow_forward</mat-icon>
+          <mat-spinner *ngIf="loadingTours" diameter="20"></mat-spinner>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

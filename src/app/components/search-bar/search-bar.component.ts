@@ -1,5 +1,5 @@
 // Updated search-bar.component.ts - Add applyFilters() and navigation
-import { Component, OnInit, OnDestroy, LOCALE_ID, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, LOCALE_ID, Output, EventEmitter, ViewChild } from '@angular/core';
 import { BackendUrlService } from '../../services/backend-url.service';
 import { CountriesService } from '../../services/countries.service'; // Import service
 import { Observable, Subscription, throwError, of } from 'rxjs';
@@ -17,7 +17,9 @@ import { MatIcon } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 import { Country } from '../../models/country.model'; // Import Country interface
-
+import { TourntripCountryService } from '../../services/tourntrip-country.service';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';  // ← Add this
+import { MatAutocomplete } from '@angular/material/autocomplete';  // ← Add this import
 interface AdventureStyle {
   id: number;
   name: string;
@@ -36,7 +38,9 @@ interface AdventureStyle {
     MatFormFieldModule, // If you want form-field features; otherwise omit
     CommonModule,
     MatIcon,
-    MatButtonModule
+    MatButtonModule,
+    MatAutocomplete,
+    MatAutocompleteTrigger
   ],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.css',
@@ -46,12 +50,13 @@ interface AdventureStyle {
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
   @Output() filtersApplied = new EventEmitter<{ country?: Country; date?: Date; adventureStyle?: AdventureStyle }>(); // Optional: For parent listening if needed
-
+@ViewChild('adventureTrigger') adventureTrigger!: MatAutocompleteTrigger;  // ← FIXED: Trigger type
   constructor(
     private router: Router,
     private backendUrlService: BackendUrlService,
     private http: HttpClient,
     private countriesService: CountriesService, // Inject service
+    private tourntripsCountryService: TourntripCountryService,
   ) {}
 
   // Adventure styles (existing)
@@ -208,9 +213,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     const country: Country = event.option.value;
     this.selectedCountry = country; // Grab the selected item
     console.log('Selected Country:', country);
-    // TODO: Trigger search, navigation (e.g., this.router.navigate([`/${country.name.toLowerCase().replace(/\s+/g, '-')}`]))
-    // The FormControl is already set to the full country object
-    // countryDisplayFn will show country.name in the input
+    this.tourntripsCountryService.setCountry(country);
   }
 
   trackByCountryId(index: number, country: Country): number {
@@ -241,13 +244,21 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   // Existing focus/blur methods
-  onAdventureFocus(): void {
-    const currentValue = this.adventureSearch.value;
-    if (typeof currentValue === 'string' && !currentValue.trim()) {
-      // Optionally show all on focus if empty string
-      this.adventureSearch.setValue('', { emitEvent: false });
-    }
+onAdventureFocus(): void {
+  const currentValue = this.adventureSearch.value;
+  if (typeof currentValue === 'string' && !currentValue.trim()) {
+    this.adventureSearch.setValue('', { emitEvent: false });
   }
+
+  // FIXED: Open via trigger (handles loading case)
+  setTimeout(() => {
+    if (this.adventureTrigger) {
+      this.adventureTrigger.openPanel();
+      console.log('Adventures panel opened programmatically');  // Debug: Confirm
+    }
+  }, 0);
+}
+
 
   onDateFocus(): void {
     // Optional: Any date-specific focus logic here (e.g., clear if needed)
@@ -286,6 +297,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   applyFilters(): void {
     const filters: { country?: Country; date?: Date; adventureStyle?: AdventureStyle } = {};
 
+
+    
     // Grab selected values
     if (this.selectedCountry) {
       filters.country = this.selectedCountry;
@@ -317,7 +330,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       queryParams.departure_date = this.formatDate(filters.date); // YYYY-MM-DD
     }
     if (filters.adventureStyle) {
-      queryParams.adventure_style = [filters.adventureStyle.id]; // Array for backend
+      // queryParams.adventure_style = [filters.adventureStyle.id]; // Array for backend
+    queryParams.adventure_style = Number(filters.adventureStyle.id);
     }
 
     // Navigate with params
@@ -327,8 +341,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     }).then(success => {
       if (success) {
         console.log('Navigation successful with filters');
-        // Optional: Clear search inputs after apply
-        // this.whereSearch.setValue(''); this.adventureSearch.setValue(''); this.whenDate.setValue(null);
+        this.whereSearch.setValue(''); this.adventureSearch.setValue(''); this.whenDate.setValue(null);
+        window.location.reload();
       }
     });
   }

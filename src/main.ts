@@ -7,7 +7,7 @@ import { register as registerSwiper } from 'swiper/element/bundle';
 
 
 export const environment = {
-  production: true,
+  production: false,
 
   mode: 'Dev'
 } 
