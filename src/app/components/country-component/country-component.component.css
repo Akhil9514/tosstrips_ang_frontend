@@ -302,3 +302,147 @@
   color: #fff !important;
 }
 
+
+
+/* Fix Material popups inside ng-bootstrap modals */
+.cdk-overlay-container {
+  position: fixed !important;
+  z-index: 1055 !important; /* higher than ng-bootstrap modal (1050) and backdrop (1040) */
+  pointer-events: auto !important;
+}
+
+/* Optional: make sure backdrops don't interfere */
+.cdk-overlay-backdrop {
+  z-index: 1054 !important;
+}
+
+/* Specifically for fullscreen modals that may add transforms */
+.ngb-modal-fullscreen .cdk-overlay-container,
+.modal-fullscreen .cdk-overlay-container {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+
+
+
+/* ===== FIX MATERIAL POPUPS INSIDE NG-BOOTSTRAP MODALS ===== */
+.cdk-overlay-container {
+  position: fixed !important;
+  z-index: 1060 !important;        /* higher than ngb modal (1050) and backdrop (1040) */
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.cdk-overlay-pane {
+  pointer-events: auto !important;
+}
+
+/* Extra safety for fullscreen modals */
+.modal-fullscreen .cdk-overlay-container,
+.modal.show .cdk-overlay-container {
+  z-index: 1060 !important;
+}
+
+
+
+.filters-modal .modal-header {
+  /* background: #98bee4;
+  color: white; */
+  padding: 1rem 1.5rem;
+  color:black
+}
+
+.filters-modal .modal-header .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+.filters-modal .modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.filters-modal .modal-content {
+  border: none;
+  border-radius: 0;
+  height: 100vh;
+  max-height: 100vh;
+}
+
+.shadow-top {
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+}
+
+/* Make body scrollable if content is long */
+.filters-modal .modal-body {
+  overflow-y: auto;
+  padding-bottom: 80px; /* space for sticky footer */
+}
+
+
+.btn-close.custom-black {
+  filter: invert(1) brightness(0); /* forces icon to black */
+}
+
+
+
+
+
+
+
+
+
+
+/* Desktop search bar */
+.search-bar-desktop {
+  position: relative;
+  z-index: 100;
+}
+
+/* Mobile trigger button - position it where you want */
+.search-mobile-trigger {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: #3f51b5;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  width: 56px;
+  height: 56px;
+}
+
+/* Mobile search container - full width, slides from bottom */
+.mobile-search-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 999;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden;
+  max-height: 90vh;
+}
+
+/* Inner wrapper - padding + scroll if needed */
+.mobile-search-bar-wrapper {
+  padding: 16px;
+  padding-bottom: 80px; /* Space for FAB button */
+  background: white;
+}
+
+/* Optional: subtle handle bar on top */
+.mobile-search-bar-wrapper::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 5px;
+  background: #ddd;
+  border-radius: 3px;
+  margin: 12px auto 16px;
+}

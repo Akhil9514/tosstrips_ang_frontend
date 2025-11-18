@@ -70,6 +70,9 @@ swiper-slide{
 }
 
 
+
+
+
 .item {
   display: flex;
   flex-direction: column;
@@ -1541,6 +1544,7 @@ footer img{
     justify-content: right;
 }
 @media(min-width: 992px){
+
 
 .header .menu > ul > li.menu-item-has-children:hover .sub-menu{
 	margin-top: 0;
@@ -5586,6 +5590,14 @@ footer img{
 
 
 @media (max-width:991px) {
+
+.egypt-tours{    
+    margin-top: 20px;
+}
+
+.middle-result{   
+   margin-top: 10px;
+  }
 .whereto-go {
     width: 100%;
     display: block;
@@ -7161,7 +7173,7 @@ footer .foot-main .foot-left ul{justify-content: space-evenly;}
 .custom-control-label {
     font-size: 13px;
 }
-.btton-space {
+/* .btton-space {
     float: left;
     width: 100%;
     margin: 0 0 16px;
@@ -7169,7 +7181,7 @@ footer .foot-main .foot-left ul{justify-content: space-evenly;}
     z-index:999;
     left:0;
     bottom: 0;
-}
+} */
 .btton-space .btn-new{
     border-radius:0;
     border:0;

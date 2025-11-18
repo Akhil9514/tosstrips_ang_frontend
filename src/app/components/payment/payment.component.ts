@@ -32,7 +32,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
     MatIconModule,
     MatNativeDateModule,
     MatMenuModule,
-    MatCheckbox
+    MatCheckbox,
+    MatButtonModule,
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
@@ -305,4 +306,34 @@ export class PaymentComponent implements OnInit, OnDestroy {
       })
     );
   }
+
+
+
+
+
+
+
+
+  // Add this method inside your PaymentComponent class
+triggerRipple(event: MouseEvent): void {
+  const button = event.currentTarget as HTMLElement;
+  const ripple = document.createElement('span');
+  
+  const rect = button.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = event.clientX - rect.left - size / 2;
+  const y = event.clientY - rect.top - size / 2;
+
+  ripple.classList.add('ripple');
+  ripple.style.width = ripple.style.height = `${size}px`;
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+
+  button.appendChild(ripple);
+
+  // Remove the ripple element after animation ends
+  ripple.addEventListener('animationend', () => {
+    ripple.remove();
+  });
+}
 }

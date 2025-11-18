@@ -294,58 +294,93 @@ onAdventureFocus(): void {
   }
 
   // New: Apply filters on button click
-  applyFilters(): void {
-    const filters: { country?: Country; date?: Date; adventureStyle?: AdventureStyle } = {};
+  // applyFilters(): void {
+  //   const filters: { country?: Country; date?: Date; adventureStyle?: AdventureStyle } = {};
 
 
     
-    // Grab selected values
-    if (this.selectedCountry) {
-      filters.country = this.selectedCountry;
-    }
-    if (this.whenDate.value) {
-      filters.date = this.whenDate.value;
-    }
-    if (this.selectedAdventureStyle) {
-      filters.adventureStyle = this.selectedAdventureStyle;
-    }
+  //   // Grab selected values
+  //   if (this.selectedCountry) {
+  //     filters.country = this.selectedCountry;
+  //   }
+  //   if (this.whenDate.value) {
+  //     filters.date = this.whenDate.value;
+  //   }
+  //   if (this.selectedAdventureStyle) {
+  //     filters.adventureStyle = this.selectedAdventureStyle;
+  //   }
 
-    console.log('Applying filters:', filters);
+  //   console.log('Applying filters:', filters);
 
-    // Emit to parent (CountryComponent) if needed
-    this.filtersApplied.emit(filters);
+  //   // Emit to parent (CountryComponent) if needed
+  //   this.filtersApplied.emit(filters);
 
-    // Navigate to country route with query params for filters
-    let navigationPath = '/';
-    let queryParams: any = {};
+  //   // Navigate to country route with query params for filters
+  //   let navigationPath = '/';
+  //   let queryParams: any = {};
 
-    if (filters.country) {
-      const countrySlug = filters.country.name.toLowerCase().replace(/\s+/g, '-');
-      navigationPath = `/${countrySlug}`;
-      // Set pageCountry in service if available (assuming TourntripCountryService)
-      // this.tourntripCountryService.setCountry(filters.country); // Uncomment if service exists
-    }
+  //   if (filters.country) {
+  //     const countrySlug = filters.country.name.toLowerCase().replace(/\s+/g, '-');
+  //     navigationPath = `/${countrySlug}`;
+  //     // Set pageCountry in service if available (assuming TourntripCountryService)
+  //     // this.tourntripCountryService.setCountry(filters.country); // Uncomment if service exists
+  //   }
 
-    if (filters.date) {
-      queryParams.departure_date = this.formatDate(filters.date); // YYYY-MM-DD
-    }
-    if (filters.adventureStyle) {
-      // queryParams.adventure_style = [filters.adventureStyle.id]; // Array for backend
-    queryParams.adventure_style = Number(filters.adventureStyle.id);
-    }
+  //   if (filters.date) {
+  //     queryParams.departure_date = this.formatDate(filters.date); // YYYY-MM-DD
+  //   }
+  //   if (filters.adventureStyle) {
+  //     // queryParams.adventure_style = [filters.adventureStyle.id]; // Array for backend
+  //   queryParams.adventure_style = Number(filters.adventureStyle.id);
+  //   }
 
-    // Navigate with params
-    this.router.navigate([navigationPath], { 
-      queryParamsHandling: 'merge', 
-      queryParams 
-    }).then(success => {
-      if (success) {
-        console.log('Navigation successful with filters');
-        this.whereSearch.setValue(''); this.adventureSearch.setValue(''); this.whenDate.setValue(null);
-        window.location.reload();
-      }
-    });
+  //   // Navigate with params
+  //   this.router.navigate([navigationPath], { 
+  //     queryParamsHandling: 'merge', 
+  //     queryParams 
+  //   }).then(success => {
+  //     if (success) {
+  //       console.log('Navigation successful with filters');
+  //       this.whereSearch.setValue(''); this.adventureSearch.setValue(''); this.whenDate.setValue(null);
+  //       window.location.reload();
+  //     }
+  //   });
+  // }
+
+
+
+  applyFilters(): void {
+  const queryParams: any = {};
+  let navigationPath = '/';
+
+  if (this.selectedCountry) {
+    const slug = this.selectedCountry.name.toLowerCase().replace(/\s+/g, '-');
+    navigationPath = `/${slug}`;
   }
+
+  if (this.whenDate.value) {
+    queryParams.departure_date = this.formatDate(this.whenDate.value);
+  }
+
+  if (this.selectedAdventureStyle) {
+    queryParams.adventure_style = this.selectedAdventureStyle.id;
+  }
+
+  this.router.navigate([navigationPath], {
+    queryParams,
+    replaceUrl: true,
+    queryParamsHandling: ''
+  }).then(() => {
+    // Reset form
+    window.location.reload();
+    this.whereSearch.setValue('');
+    this.adventureSearch.setValue('');
+    this.whenDate.setValue(null);
+    this.selectedCountry = null;
+    this.selectedAdventureStyle = null;
+  });
+}
+
 
   // Helper to format date
   private formatDate(date: Date): string {

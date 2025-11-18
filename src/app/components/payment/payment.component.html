@@ -149,7 +149,8 @@
                           matInput
                           [matDatepicker]="pickerIn"
                           formControlName="checkIn"
-                          [min]="tourData?.departure_date || today"
+                          [min]="today"
+                          
                         />
                         <mat-datepicker-toggle
                           matSuffix
@@ -189,7 +190,7 @@
                           matInput
                           [matDatepicker]="pickerOut"
                           formControlName="checkOut"
-                          [min]="paymentForm.get('checkIn')?.value"
+                          [min]="paymentForm.get('checkIn')?.value || today"
                         />
                         <mat-datepicker-toggle
                           matSuffix
@@ -387,58 +388,68 @@
               }}</span>
             </div>
             <div class="btton-space">
-              <button
-                type="submit"
-                id="book-now-btn"
-                class="btn-new"
-                [disabled]="paymentForm.invalid"
-              >
-                Book Now
-              </button>
+<div class="btton-space text-center">
+  <button
+    type="submit"
+    id="book-now-btn"
+    class="btn-new"
+    [disabled]="paymentForm.invalid"
+    (click)="triggerRipple($event)"
+  >
+    Book Now
+  </button>
+</div>
             </div>
           </div>
         </form>
       </div>
-      <!-- Closing col-lg-8 here -->
-      <div class="col-lg-4">
-        <div class="my-trip">
-          <div class="details">
-            <div><h2>My Trip</h2></div>
-            <div class="price-pay">
-              <span>-{{ tourData?.discount_percentage }}%</span>
-              <p>Best price Guarantee</p>
-            </div>
-          </div>
-          <strong>{{ tourData?.title }}</strong>
-          <p>{{ tourData?.duration_display }}</p>
-          <strong
-            >Starts in {{ tourData?.start_city | titlecase }},
-            {{ tourData?.country }}</strong
-          >
-          <p>{{ startDateFormatted }}</p>
-          <strong
-            >Ends in {{ tourData?.end_city | titlecase }},
-            {{ tourData?.country }}</strong
-          >
-          <p>{{ endDateFormatted }}</p>
-          <strong>Operated in</strong>
-          <p>
-            English, German, Italian, Portuguese, French, Spanish, Dutch,
-            Russian
-          </p>
-          <strong>What's included</strong>
-          <p>Accommodation, Guide, Meals, Transport</p>
-        </div>
-
-        <div class="price-breakdown">
-          <h2>Price Breakdown</h2>
-
-          <span>
-            Select the number of travelers and assign accommodation to display
-            the price.
-          </span>
-        </div>
+<div class="col-lg-4">
+  <div class="my-trip">
+    <div class="details">
+      <div><h2>My Trip</h2></div>
+      <div class="price-pay">
+        <span>-{{ tourData?.discount_percentage }}%</span>
+        <p>Best price Guarantee</p>
       </div>
+    </div>
+
+    <strong>{{ tourData?.title }}</strong>
+    <p>{{ tourData?.duration_display }}</p>
+
+    <!-- Start City & Country -->
+     <p>
+    <strong>
+      Starts in {{ tourData?.start_city | titlecase }}, {{ tourData?.country }}
+    </strong>
+  </p>
+    <!-- Start Date is commented out -->
+    <!-- <p>{{ startDateFormatted }}</p> -->
+
+    <!-- End City & Country -->
+     <p>
+    <strong>
+      Ends in {{ tourData?.end_city | titlecase }}, {{ tourData?.country }}
+    </strong>
+  </p>
+    <!-- End Date is commented out -->
+    <!-- <p>{{ endDateFormatted }}</p> -->
+
+    <strong>Operated in</strong>
+    <p>
+      English, German, Italian, Portuguese, French, Spanish, Dutch, Russian
+    </p>
+
+    <strong>What's included</strong>
+    <p>Accommodation, Guide, Meals, Transport</p>
+  </div>
+
+  <div class="price-breakdown">
+    <h2>Price Breakdown</h2>
+    <span>
+      Select the number of travelers and assign accommodation to display the price.
+    </span>
+  </div>
+</div>
       <!-- Closing col-lg-4 here -->
     </div>
     <!-- Closing row here -->

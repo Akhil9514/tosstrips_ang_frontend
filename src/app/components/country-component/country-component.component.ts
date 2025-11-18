@@ -36,8 +36,10 @@ import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { signal, WritableSignal } from '@angular/core';
 import { HostListener } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { NgbModal, NgbModalUpdatableOptions, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { ElementRef, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 
 export interface User {
@@ -135,7 +137,34 @@ interface FilterChip {
   ],
   templateUrl: './country-component.component.html',
   styleUrl: './country-component.component.css',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  animations: [
+    // Slide up/down from bottom
+    trigger('slideInOut', [
+      state('true', style({
+        transform: 'translateY(0)',
+        opacity: 1,
+        visibility: 'visible'
+      })),
+      state('false', style({
+        transform: 'translateY(100%)',
+        opacity: 0,
+        visibility: 'hidden'
+      })),
+      transition('false => true', [
+        style({ transform: 'translateY(100%)', opacity: 0 }),
+        animate('350ms cubic-bezier(0.4, 0, 0.2, 1)')
+      ]),
+      transition('true => false', animate('300ms cubic-bezier(0.4, 0, 0.2, 1)'))
+    ]),
+
+    // FAB icon rotate
+    trigger('fabTransform', [
+      state('closed', style({ transform: 'rotate(0)' })),
+      state('open', style({ transform: 'rotate(135deg)' })),
+      transition('closed <=> open', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class CountryComponentComponent implements OnInit, OnDestroy {
 
@@ -257,6 +286,14 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
 
   private modalService = inject(NgbModal);
 
+  @ViewChild("filtersBlock") filtersBlock!: ElementRef;
+  @ViewChild('filtersTemplate') filtersTemplate!: TemplateRef<any>;
+  
+  @ViewChild('sidefiltersTemplate') sidefiltersTemplate!: TemplateRef<any>;
+  @ViewChild('modalContent') modalContent!: TemplateRef<any>;
+  @ViewChild('searchModal') searchModal!: TemplateRef<any>;
+
+  mobileSearchOpen = false;
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
@@ -267,6 +304,7 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
     private tourntripCountryService: TourntripCountryService,
     private http: HttpClient,
     private requestingLocationService: RequestingLocationService,
+    private dialog: MatDialog
 
   ) {
     this.requestingLocationService.country$.subscribe(country => {
@@ -1269,9 +1307,34 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
 
 
 
-  	openSm(content: TemplateRef<any>) {
-		this.modalService.open(content, { size: 'sm' });
-	}
+
+  // tours.component.ts — only change this method
+openFullscreen() {
+  this.modalService.open(this.modalContent, {
+    fullscreen: true,
+    windowClass: 'filters-modal',
+    backdrop: 'static',
+    keyboard: true, // optional: prevent ESC close if you want
+  });
+}
+
+
+openSearch() {
+  this.modalService.open(this.searchModal, {
+    fullscreen: true,
+    backdrop: true,
+    keyboard: true,
+    modalDialogClass: 'mat-modal',
+    centered: true,
+    scrollable: true,
+    backdropClass: 'light-backdrop',
+    container: 'body'  // IMPORTANT
+  });
+}
+
+
+
+
 
 
 

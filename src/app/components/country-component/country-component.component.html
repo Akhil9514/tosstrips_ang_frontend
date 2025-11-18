@@ -1,26 +1,52 @@
+<!-- Search bar visible only on large screens -->
 <app-search-bar></app-search-bar>
 
-<!-- SECTION 1: Country Title -->
+
 <section class="egypt-tours">
   <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
+    <div class="d-flex align-items-center">
+      <!-- Title -->
+      <div class="flex-grow-1">
         <div *ngIf="pageCountry as country">
-          <h2>
+          <h2 class="m-0">
             {{ country.name }} Tours & Trips |
             <span>{{ country.name }} Tours & Trips</span>
           </h2>
         </div>
       </div>
+
+      <!-- Filter button (small & medium only) -->
+      <button
+        mat-icon-button
+        color="primary"
+        class="d-lg-none ms-3"
+        (click)="openFullscreen()"
+        aria-label="Open Filters"
+      >
+        <mat-icon>filter_list</mat-icon>
+      </button>
+
+      
+      <!--
+      <button
+        mat-icon-button
+        color="primary"
+        class="d-lg-none ms-2"
+        (click)="openSearch()"
+        aria-label="Open Search"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+      -->
+      
     </div>
   </div>
 </section>
 
 <!-- SECTION 2: Filters & Sort -->
-<section class="most-poplar py-3">
+<ng-template #filtersTemplate>
   <div class="container">
     <div class="row g-3 justify-content-center align-items-stretch price">
-      <!-- ==== SORT ==== -->
       <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
         <div class="h-100 d-flex flex-column justify-content-center">
           <mat-form-field appearance="fill" class="w-100">
@@ -45,7 +71,6 @@
         </div>
       </div>
 
-      <!-- ==== PRICE SLIDER ==== -->
       <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
         <div
           class="h-100 d-flex flex-column justify-content-center text-center"
@@ -74,7 +99,6 @@
         </div>
       </div>
 
-      <!-- ==== CITY SEARCH ==== -->
       <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
         <div class="h-100 d-flex flex-column justify-content-center">
           <form class="">
@@ -101,7 +125,6 @@
         </div>
       </div>
 
-      <!-- ==== APPLIED FILTERS ==== -->
       <div class="col-12 col-md-6 col-lg border-lg-0 border-lg-end border-dark">
         <div class="h-100 d-flex flex-column justify-content-center">
           <mat-form-field appearance="fill" class="w-100">
@@ -117,7 +140,6 @@
             </mat-label>
 
             <mat-select [value]="null" (closed)="onFilterMenuClosed()">
-              <!-- No filters -->
               <mat-option
                 *ngIf="activeFilters().length === 0"
                 disabled
@@ -126,7 +148,6 @@
                 No filters applied
               </mat-option>
 
-              <!-- 2D SCROLL AREA -->
               <div
                 class="applied-filters-wrapper"
                 *ngIf="activeFilters().length > 0"
@@ -137,7 +158,6 @@
                     class="applied-filter-chip"
                     (click)="$event.stopPropagation()"
                   >
-                    <!-- X BUTTON FIRST -->
                     <button
                       mat-icon-button
                       class="small-x-btn"
@@ -150,7 +170,6 @@
                       <mat-icon class="icon-x" fontIcon="clear"></mat-icon>
                     </button>
 
-                    <!-- TRUNCATED LABEL -->
                     <span class="filter-label">
                       {{ filter.label }}
                     </span>
@@ -158,7 +177,6 @@
                 </div>
               </div>
 
-              <!-- Clear all – sticky at bottom -->
               <mat-option
                 *ngIf="activeFilterCount() > 0"
                 class="text-danger clear-all-option"
@@ -171,7 +189,6 @@
         </div>
       </div>
 
-      <!-- ==== APPLY BUTTON ==== -->
       <div
         class="col-12 col-md-6 col-lg d-flex justify-content-center align-items-center border-lg-0 border-dark"
       >
@@ -189,176 +206,191 @@
       </div>
     </div>
   </div>
+</ng-template>
+
+<!-- LEFT: FILTERS -->
+<ng-template #sidefiltersTemplate>
+  <!-- Departure Date Picker -->
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Choose a date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [formControl]="selectedDepartureDate"
+      [min]="today"
+    />
+    <mat-button
+      matIconButton
+      matSuffix
+      (click)="selectedDepartureDate.setValue(null)"
+      *ngIf="selectedDepartureDate.value"
+    >
+      <mat-icon>clear</mat-icon>
+    </mat-button>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Month Filter 
+            <div class="filter-section" [class.toggled-on]="isDepartureOpen">
+              <div class="toggle-title" (click)="toggleDeparture()">
+                <h3>Departure date</h3>
+                <mat-icon
+                  [class.hidden]="isDepartureOpen"
+                  aria-label="Expand"
+                  fontIcon="keyboard_arrow_down"
+                ></mat-icon>
+              </div>
+              <div class="toggle-assets" *ngIf="isDepartureOpen">
+                <div class="result-left">
+                  <div class="departer-nav1">
+                    <ng-container *ngFor="let month of months">
+                      <div class="month-row">
+                        <mat-checkbox
+                          color="primary"
+                          [checked]="selectedMonths().includes(month.value)"
+                          (change)="toggleMonth(month, $event)"
+                        ></mat-checkbox>
+                        <label class="chkboxinput">{{ month.label }}</label>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+            -->
+
+  <!-- Adventure Styles -->
+  <div class="filter-section" [class.toggled-on]="isAdventureStyles">
+    <div class="toggle-title" (click)="toggleAdventure()">
+      <h3>Adventure Styles</h3>
+      <mat-icon aria-label="Toggle" fontIcon="keyboard_arrow_down"></mat-icon>
+    </div>
+    <div class="toggle-assets" *ngIf="isAdventureStyles">
+      <div class="result-left">
+        <div class="departer-nav1">
+          <div *ngIf="loadingAdventureStyles" class="loading-spinner">
+            Loading adventure styles...
+          </div>
+
+          @for (style of adventureStyles; track style.id; let i = $index) {
+          <div class="month-row">
+            <mat-checkbox
+              color="primary"
+              [formControl]="adventureStylesForm.at(i)"
+              (change)="onAdventureStyleChange(i, $event)"
+            >
+              {{ style.name }}
+            </mat-checkbox>
+          </div>
+          }
+
+          <div
+            *ngIf="!loadingAdventureStyles && adventureStyles.length === 0"
+            class="no-styles"
+          >
+            No adventure styles available.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start & End City -->
+  <div class="filter-section" [class.toggled-on]="isStartandEndCityOpen">
+    <div class="toggle-title" (click)="toggleStartandEndCity()">
+      <h3>Start & ending destinations</h3>
+      <mat-icon aria-label="Toggle" fontIcon="keyboard_arrow_down"></mat-icon>
+    </div>
+    <div class="toggle-assets">
+      <div class="result-left">
+        <div class="departer-nav1">
+          <!-- START CITY -->
+          <form class="example-form">
+            <mat-form-field class="example-full-width">
+              <mat-label>Search start destination</mat-label>
+              <input
+                type="text"
+                matInput
+                [formControl]="startCityControl"
+                [matAutocomplete]="autoStart"
+                placeholder="e.g. Delhi"
+              />
+              <mat-autocomplete
+                #autoStart="matAutocomplete"
+                [displayWith]="displayFn"
+                (optionSelected)="onStartCitySelected($event)"
+              >
+                @for (city of filteredStartCities$ | async; track city.id) {
+                <mat-option [value]="city">
+                  {{ city.name }}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </form>
+
+          <!-- END CITY -->
+          <form class="example-form">
+            <mat-form-field class="example-full-width">
+              <mat-label>Search end destination</mat-label>
+              <input
+                type="text"
+                matInput
+                [formControl]="endCityControl"
+                [matAutocomplete]="autoEnd"
+                placeholder="e.g. Mumbai"
+              />
+              <mat-autocomplete
+                #autoEnd="matAutocomplete"
+                [displayWith]="displayFn"
+                (optionSelected)="onEndCitySelected($event)"
+              >
+                @for (city of filteredEndCities$ | async; track city.id) {
+                <mat-option [value]="city">
+                  {{ city.name }}
+                </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<section class="most-poplar py-3 d-none d-lg-block">
+  <ng-container *ngTemplateOutlet="filtersTemplate"></ng-container>
 </section>
+
+<ng-template #modalContent let-modal>
+  <!-- Modal Header -->
+  <div class="modal-header border-0 pb-0 d-flex justify-content-between align-items-center">
+    
+    <h4 class="modal-title m-0">Filters & Sorting</h4>
+
+    <button mat-icon-button (click)="modal.dismiss()" aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+
+  </div>
+
+  <!-- Modal Body - Your Existing Filters -->
+  <div class="modal-body pt-2 mt-4">
+    <ng-container *ngTemplateOutlet="sidefiltersTemplate"></ng-container>
+    <div style="margin-top: 1rem"></div>
+    <ng-container *ngTemplateOutlet="filtersTemplate"></ng-container>
+  </div>
+</ng-template>
+
 
 <!-- SECTION 3: Main Results (Filters + Tours) -->
 <section class="middle-result">
   <div class="container">
     <div class="row">
-      <!-- LEFT: FILTERS -->
-      <div class="col-lg-3">
-        <!-- Departure Date Picker -->
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Choose a date</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            [formControl]="selectedDepartureDate"
-            [min]="today"
-          />
-          <mat-button
-            matIconButton
-            matSuffix
-            (click)="selectedDepartureDate.setValue(null)"
-            *ngIf="selectedDepartureDate.value"
-          >
-            <mat-icon>clear</mat-icon>
-          </mat-button>
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-          ></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-
-        <!-- Month Filter 
-        <div class="filter-section" [class.toggled-on]="isDepartureOpen">
-          <div class="toggle-title" (click)="toggleDeparture()">
-            <h3>Departure date</h3>
-            <mat-icon
-              [class.hidden]="isDepartureOpen"
-              aria-label="Expand"
-              fontIcon="keyboard_arrow_down"
-            ></mat-icon>
-          </div>
-          <div class="toggle-assets" *ngIf="isDepartureOpen">
-            <div class="result-left">
-              <div class="departer-nav1">
-                <ng-container *ngFor="let month of months">
-                  <div class="month-row">
-                    <mat-checkbox
-                      color="primary"
-                      [checked]="selectedMonths().includes(month.value)"
-                      (change)="toggleMonth(month, $event)"
-                    ></mat-checkbox>
-                    <label class="chkboxinput">{{ month.label }}</label>
-                  </div>
-                </ng-container>
-              </div>
-            </div>
-          </div>
-        </div>
-        -->
-
-
-        <!-- Adventure Styles -->
-        <div class="filter-section" [class.toggled-on]="isAdventureStyles">
-          <div class="toggle-title" (click)="toggleAdventure()">
-            <h3>Adventure Styles</h3>
-            <mat-icon
-              aria-label="Toggle"
-              fontIcon="keyboard_arrow_down"
-            ></mat-icon>
-          </div>
-          <div class="toggle-assets" *ngIf="isAdventureStyles">
-            <div class="result-left">
-              <div class="departer-nav1">
-                <div *ngIf="loadingAdventureStyles" class="loading-spinner">
-                  Loading adventure styles...
-                </div>
-
-                @for (style of adventureStyles; track style.id; let i = $index)
-                {
-                <div class="month-row">
-                  <mat-checkbox
-                    color="primary"
-                    [formControl]="adventureStylesForm.at(i)"
-                    (change)="onAdventureStyleChange(i, $event)"
-                  >
-                    {{ style.name }}
-                  </mat-checkbox>
-                </div>
-                }
-
-                <div
-                  *ngIf="
-                    !loadingAdventureStyles && adventureStyles.length === 0
-                  "
-                  class="no-styles"
-                >
-                  No adventure styles available.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Start & End City -->
-        <div class="filter-section" [class.toggled-on]="isStartandEndCityOpen">
-          <div class="toggle-title" (click)="toggleStartandEndCity()">
-            <h3>Start & ending destinations</h3>
-            <mat-icon
-              aria-label="Toggle"
-              fontIcon="keyboard_arrow_down"
-            ></mat-icon>
-          </div>
-          <div class="toggle-assets">
-            <div class="result-left">
-              <div class="departer-nav1">
-                <!-- START CITY -->
-                <form class="example-form">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Search start destination</mat-label>
-                    <input
-                      type="text"
-                      matInput
-                      [formControl]="startCityControl"
-                      [matAutocomplete]="autoStart"
-                      placeholder="e.g. Delhi"
-                    />
-                    <mat-autocomplete
-                      #autoStart="matAutocomplete"
-                      [displayWith]="displayFn"
-                      (optionSelected)="onStartCitySelected($event)"
-                    >
-                      @for (city of filteredStartCities$ | async; track city.id)
-                      {
-                      <mat-option [value]="city">
-                        {{ city.name }}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </form>
-
-                <!-- END CITY -->
-                <form class="example-form">
-                  <mat-form-field class="example-full-width">
-                    <mat-label>Search end destination</mat-label>
-                    <input
-                      type="text"
-                      matInput
-                      [formControl]="endCityControl"
-                      [matAutocomplete]="autoEnd"
-                      placeholder="e.g. Mumbai"
-                    />
-                    <mat-autocomplete
-                      #autoEnd="matAutocomplete"
-                      [displayWith]="displayFn"
-                      (optionSelected)="onEndCitySelected($event)"
-                    >
-                      @for (city of filteredEndCities$ | async; track city.id) {
-                      <mat-option [value]="city">
-                        {{ city.name }}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="col-lg-3 d-none d-lg-block">
+        <ng-container *ngTemplateOutlet="sidefiltersTemplate"></ng-container>
       </div>
 
       <!-- RIGHT: TOURS LIST -->
