@@ -350,6 +350,7 @@ onAdventureFocus(): void {
 
 
   applyFilters(): void {
+    const previousUrl = this.router.url;
   const queryParams: any = {};
   let navigationPath = '/';
 
@@ -372,7 +373,9 @@ onAdventureFocus(): void {
     queryParamsHandling: ''
   }).then(() => {
     // Reset form
-    window.location.reload();
+        if (previousUrl === '/' || previousUrl === '') {
+      window.location.reload();
+    }
     this.whereSearch.setValue('');
     this.adventureSearch.setValue('');
     this.whenDate.setValue(null);

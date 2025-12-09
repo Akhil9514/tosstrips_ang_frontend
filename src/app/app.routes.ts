@@ -65,6 +65,6 @@ export const routes: Routes = [
 
 
 
-  { path: ':country', component: CountryComponentComponent },
+  { path: ':country', component: CountryComponentComponent, runGuardsAndResolvers: 'always' },
   { path: '**', redirectTo: '' }
 ];

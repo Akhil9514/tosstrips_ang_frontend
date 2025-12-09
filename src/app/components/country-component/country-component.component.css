@@ -306,14 +306,14 @@
 
 /* Fix Material popups inside ng-bootstrap modals */
 .cdk-overlay-container {
-  position: fixed !important;
-  z-index: 1055 !important; /* higher than ng-bootstrap modal (1050) and backdrop (1040) */
-  pointer-events: auto !important;
+  /* position: fixed !important;
+  z-index: 1055 !important;
+  pointer-events: auto !important; */
 }
 
 /* Optional: make sure backdrops don't interfere */
 .cdk-overlay-backdrop {
-  z-index: 1054 !important;
+  /* z-index: 1054 !important; */
 }
 
 /* Specifically for fullscreen modals that may add transforms */

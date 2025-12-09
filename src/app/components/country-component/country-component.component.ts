@@ -402,6 +402,7 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
     });
   }
 
+  
 
 
 
@@ -631,9 +632,13 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
     // Log only if needed (remove for prod)
     if (page !== undefined) console.log("Updating URL with page:", page);
 
-    this.router.navigate([], navOptions).then(() => {
-      this.loadToursWithCurrentFilters(page ?? 1);
-    });
+    // this.router.navigate([], navOptions).then(() => {
+    //   this.loadToursWithCurrentFilters(page ?? 1);
+    // });
+
+    this.router.navigate([], navOptions);
+
+
   }
 
 
