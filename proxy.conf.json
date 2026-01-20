@@ -1,0 +1,7 @@
+{
+  "/tourntrips": {
+    "target": "http://34.228.153.200",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
