@@ -19,7 +19,7 @@
   height: 140px;
   width: 140px;
   margin-right: 10px;
-  background: url("/assets/images/logo/logo-new.png") center/contain no-repeat;
+  background: url("/assets/images/logo/logo.svg") center/contain no-repeat;
   transition: transform 0.3s ease;
   filter: drop-shadow(1px 1px 3px rgba(0,0,0,.15));
 }

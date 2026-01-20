@@ -17,10 +17,13 @@ import { MatMenuModule } from '@angular/material/menu'; // Add this import
 import { RequestingLocationService } from '../../services/requesting-location.service'; // Add this import
 import Swal from 'sweetalert2';
 import { MatCheckbox } from '@angular/material/checkbox';
+import {provideNativeDateAdapter} from '@angular/material/core';
+
 
 @Component({
   selector: 'app-payment',
   standalone: true,
+  providers: [provideNativeDateAdapter()],
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -34,6 +37,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
     MatMenuModule,
     MatCheckbox,
     MatButtonModule,
+    MatDatepickerModule,
+    
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'

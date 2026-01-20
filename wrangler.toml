@@ -1,0 +1,4 @@
+name = "tosstrips_ang_frontend"
+compatibility_date = "2026-01-08"
+
+pages_build_output_dir = "./dist/tosstrips_ang_frontend/browser"

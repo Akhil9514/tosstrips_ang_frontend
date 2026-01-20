@@ -40,6 +40,7 @@ import { NgbModal, NgbModalUpdatableOptions, NgbModalOptions } from '@ng-bootstr
 import { ElementRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { log } from 'console';
 
 
 export interface User {
@@ -320,10 +321,10 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
 
     this.loadAdventureStyles();
 
-
     // Extract country from route early
     const countryFromUrl = this.route.snapshot.paramMap.get('country');
     this.selectedCountry = countryFromUrl || null;
+    
     if (this.selectedCountry) {
       // Prime pageCountry from service (now with getCountryBySlug)
       this.pageCountry = this.tourntripCountryService.getCountryBySlug(this.selectedCountry) || this.tourntripCountryService.getCountry();
@@ -366,6 +367,7 @@ export class CountryComponentComponent implements OnInit, OnDestroy {
 
     // NEW: Subscribe to queryParams changes for search filters
     this.routeSub = this.route.queryParams.subscribe(params => {
+      console.log('Query params changed:', params);
       this.applySearchFiltersFromParams(params);
     });
 

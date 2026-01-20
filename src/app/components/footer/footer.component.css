@@ -8,3 +8,8 @@
 .social-links .icon-link:hover i {
     color: var(--red);
 }
+
+.logo-img{
+    height: 140px;
+    width:auto
+}

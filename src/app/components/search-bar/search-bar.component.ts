@@ -373,9 +373,11 @@ onAdventureFocus(): void {
     queryParamsHandling: ''
   }).then(() => {
     // Reset form
-        if (previousUrl === '/' || previousUrl === '') {
-      window.location.reload();
-    }
+    // if (previousUrl === '/' || previousUrl === '') {
+    //   window.location.reload();
+    // }
+
+
     this.whereSearch.setValue('');
     this.adventureSearch.setValue('');
     this.whenDate.setValue(null);
